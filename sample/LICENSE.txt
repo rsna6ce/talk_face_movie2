@@ -1,2 +1,5 @@
-helloworld.wav
+zunda.wav
 音声：VOICEVOX:ずんだもん
+
+ondoku3.mp3
+音声：音読さん https://ondoku3.com/ja/
