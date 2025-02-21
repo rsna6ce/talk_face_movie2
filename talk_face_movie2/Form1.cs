@@ -63,6 +63,51 @@ namespace talk_face_movie2
                     return;
                 }
             }
+            string filename_input = textBoxInputfile.Text;
+            string filename_temp_wav = "";
+            if (Path.GetExtension(filename_input).ToString().ToLower() == ".mp3")
+            {
+                // ffmpeg -i "input.mp3" -vn -ac 2 -ar 44100 -acodec pcm_s16le -f wav "output.wav"
+                print_textbox("converting from mp3 to wav ...");
+                filename_temp_wav = Path.Combine(exe_dir, "temp_mp3_to_wav.wav");
+                ProcessStartInfo processInfo = new ProcessStartInfo
+                {
+                    FileName = textBoxFfmpeg.Text,
+                    Arguments = string.Format("-loglevel warning " +
+                                             "-y " +
+                                             "-i \"{0}\" " +
+                                             "-vn -ac 1 -ar 24000 " +
+                                             "-vcodec libx264 " +
+                                             "-acodec pcm_s16le " +
+                                             "-f wav " +
+                                             "\"{1}\"",
+                                             filename_input, filename_temp_wav),
+                    UseShellExecute = false,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    CreateNoWindow = true
+                };
+                using (Process process = new Process())
+                {
+                    process.StartInfo = processInfo;
+                    process.Start();
+                    process.WaitForExit();
+
+                    string output = process.StandardOutput.ReadToEnd();
+                    string error = process.StandardError.ReadToEnd();
+                    if (!string.IsNullOrEmpty(output))
+                        print_textbox(output);
+                    if (!string.IsNullOrEmpty(error))
+                        print_textbox(error);
+                }
+                // input file replace from mp3 to wav
+                filename_input = filename_temp_wav;
+            }
+            else if (Path.GetExtension(filename_input).ToString().ToLower() != ".wav")
+            {
+                MessageBox.Show("Not supported input file.\n\n" + textBoxInputfile.Text, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
 
 
             WaveReadSample.WaveReadSample wrs = new WaveReadSample.WaveReadSample();
@@ -80,13 +125,12 @@ namespace talk_face_movie2
             string filename_large = Path.Combine(image_dir, "face_3.png");
             string filename_blink = Path.Combine(image_dir, "face_4.png");
 
-            wrs.ReadWave(textBoxInputfile.Text);
+            wrs.ReadWave(filename_input);
             WaveReadSample.WaveHeaderArgs wha = wrs.GetHeader();
 
             int data_length = wrs._waveData.Length;
             int sample_rate = wha.SampleRate;
             int sample_interval = sample_rate / (int)numericUpDownFramerate.Value;
-            //int sample_count = data_length / sample_interval;
             int sample_count = 0;
             double signal_peak = 0;
             int latest_blink = 0;
@@ -114,7 +158,6 @@ namespace talk_face_movie2
                     string msec_with_zero = ((int)(msec * 1000)).ToString("D3");
                     string sec_with_zero = sec.ToString("D2");
                     string min_with_zero = min.ToString("D3");
-                    //print_textbox($"{frame_number_with_zero} ({min_with_zero}:{sec_with_zero}:{msec_with_zero}) {signal_peak:F3}  ", false);
                     print_textbox(string.Format("{0} ({1}:{2}:{3}) {4:F3}  ", 
                         frame_number_with_zero, min_with_zero, sec_with_zero, msec_with_zero, signal_peak), false);
                     string temp_filename = temp_dir + @"\" + frame_number_with_zero + ".png";
@@ -210,7 +253,6 @@ namespace talk_face_movie2
                     process.Start();
                     process.WaitForExit();
 
-                    // 必要に応じて出力やエラーを取得
                     string output = process.StandardOutput.ReadToEnd();
                     string error = process.StandardError.ReadToEnd();
                     if (!string.IsNullOrEmpty(output))
@@ -236,7 +278,7 @@ namespace talk_face_movie2
                                              "-map 0:v:0 " +
                                              "-map 1:a:0 " +
                                              "\"{2}\" ",
-                                             temp_mp4, textBoxInputfile.Text, textBoxOutputfile.Text),
+                                             temp_mp4, filename_input, textBoxOutputfile.Text),
                     UseShellExecute = false,
                     RedirectStandardOutput = true,
                     RedirectStandardError = true,
@@ -248,7 +290,6 @@ namespace talk_face_movie2
                     process.Start();
                     process.WaitForExit();
 
-                    // 必要に応じて出力やエラーを取得
                     string output = process.StandardOutput.ReadToEnd();
                     string error = process.StandardError.ReadToEnd();
                     if (!string.IsNullOrEmpty(output))
@@ -266,6 +307,10 @@ namespace talk_face_movie2
             if (File.Exists(temp_mp4))
             {
                 File.Delete(temp_mp4);
+            }
+            if (filename_temp_wav != "" && File.Exists(filename_temp_wav))
+            {
+                File.Delete(filename_temp_wav);
             }
             print_textbox("OUTPUT: " + textBoxOutputfile.Text);
             print_textbox("finished !!");
@@ -356,7 +401,7 @@ namespace talk_face_movie2
         {
             OpenFileDialog ofd = new OpenFileDialog();
             ofd.FileName = "";
-            ofd.Filter = "Wav file(*.wav)|*.wav";
+            ofd.Filter = "Sound file(*.wav;*.mp3)|*.wav;*.mp3";
             ofd.FilterIndex = 1;
             ofd.Title = "Select input wav filename.";
             ofd.RestoreDirectory = true;
