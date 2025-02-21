@@ -31,7 +31,7 @@ namespace talk_face_movie2
 
             if (File.Exists(textBoxInputfile.Text) == false)
             {
-                MessageBox.Show("Not found input file.\n\n" + textBoxInputfile.Text, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("入力ファイルが見つかりません。\n\n" + textBoxInputfile.Text, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
@@ -43,7 +43,7 @@ namespace talk_face_movie2
             }
             if (Directory.Exists(image_dir) == false)
             {
-                MessageBox.Show("Not found image dir.\n\n" + textBoxImagedir.Text, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("顔画像フォルダが見つかりません。\n\n" + textBoxImagedir.Text, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
             for (int i = 1; i <= 4; i++)
@@ -51,7 +51,7 @@ namespace talk_face_movie2
                 string filename = image_dir + @"\" + "face_" + i.ToString() + ".png";
                 if (File.Exists(filename) == false)
                 {
-                    MessageBox.Show("Not found image file.\n\n" + filename, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("顔画像ファイルが見つかりません。\n\n" + filename, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
             }
@@ -59,7 +59,7 @@ namespace talk_face_movie2
             {
                 if (ExistFileWithPathEnv(textBoxFfmpeg.Text) == false)
                 {
-                    MessageBox.Show("Not found ffmpeg.\n\n" + textBoxFfmpeg.Text, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("ffmpegが見つかりません。\n\n" + textBoxFfmpeg.Text, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
             }
@@ -105,7 +105,7 @@ namespace talk_face_movie2
             }
             else if (Path.GetExtension(filename_input).ToString().ToLower() != ".wav")
             {
-                MessageBox.Show("Not supported input file.\n\n" + textBoxInputfile.Text, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("入力されたファイル形式はサポートしていません。\n\n" + textBoxInputfile.Text, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
@@ -137,12 +137,16 @@ namespace talk_face_movie2
             int frame_number = 0;
             string prev_style = "";
             int blink_interval = (int)numericUpDownBlinkInterval.Value;
+            int progress_percent = 0;
 
             double small_threshold = (double)numericUpDownSmallThreshold.Value / 100.0;
             double large_threshold = (double)numericUpDownLargeThreshold.Value / 100.0;
 
             for (int i = 0; i < data_length; i++)
             {
+                progress_percent = (int)(i * 80.0 / data_length);
+                SetProgressbar(progress_percent);
+
                 int value = (int)wrs._waveData[i];
                 double value_d = (double)value / (double)((1 << 15) - 1);
                 signal_peak = Math.Max(signal_peak, Math.Abs(value_d));
@@ -261,7 +265,7 @@ namespace talk_face_movie2
                         print_textbox(error);
                 }
             }
-
+            SetProgressbar(90);
 
             // mux sound with ffmpeg
             print_textbox("muxing sound with ffmpeg...");
@@ -298,6 +302,7 @@ namespace talk_face_movie2
                         print_textbox(error);
                 }
             }
+            SetProgressbar(95);
 
             // cleanup temp
             foreach (string filename in Directory.GetFiles(temp_dir, "*.png"))
@@ -314,7 +319,8 @@ namespace talk_face_movie2
             }
             print_textbox("OUTPUT: " + textBoxOutputfile.Text);
             print_textbox("finished !!");
-            MessageBox.Show("Finished.", "OK", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            SetProgressbar(100);
+            MessageBox.Show("変換完了！！", "OK", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private void print_textbox(string text, bool newline = true)
@@ -354,8 +360,18 @@ namespace talk_face_movie2
             return false;
         }
 
+        private void SetProgressbar(int percent)
+        {
+            int width = Math.Min(buttonRun.Width, buttonRun.Width * percent / 100);
+            if (labelProgressbar.Width != width)
+            {
+                labelProgressbar.Width = width;
+                labelProgressbar.Refresh();
+            }
+        }
         private void Form1_Load(object sender, EventArgs e)
         {
+            SetProgressbar(0);
             if (File.Exists(param_json_name))
             {
                 using (var ms = new FileStream(param_json_name, FileMode.Open))
@@ -401,9 +417,13 @@ namespace talk_face_movie2
         {
             OpenFileDialog ofd = new OpenFileDialog();
             ofd.FileName = "";
+            if (textBoxInputfile.Text != "" && File.Exists(textBoxInputfile.Text))
+            {
+                ofd.InitialDirectory = Path.GetDirectoryName(textBoxInputfile.Text);
+            }
             ofd.Filter = "Sound file(*.wav;*.mp3)|*.wav;*.mp3";
             ofd.FilterIndex = 1;
-            ofd.Title = "Select input wav filename.";
+            ofd.Title = "入力ファイル(wav/mp3)を選択してください。";
             ofd.RestoreDirectory = true;
             ofd.CheckFileExists = true;
             ofd.CheckPathExists = true;
@@ -411,7 +431,7 @@ namespace talk_face_movie2
             {
                 textBoxInputfile.Text = ofd.FileName;
                 string new_filename = Path.GetDirectoryName(ofd.FileName) + @"\" + Path.GetFileNameWithoutExtension(ofd.FileName) + ".mp4";
-                if (MessageBox.Show("Set output filename automatic?\n" + new_filename, "Confirm", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                if (MessageBox.Show("出力ファイル名を自動的に設定しますか?\n" + new_filename, "確認", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                 {
                     textBoxOutputfile.Text = new_filename;
                 }
@@ -422,9 +442,13 @@ namespace talk_face_movie2
         {
             SaveFileDialog sfd = new SaveFileDialog();
             sfd.FileName = "";
+            if (textBoxOutputfile.Text != "" && File.Exists(textBoxOutputfile.Text))
+            {
+                sfd.InitialDirectory = Path.GetDirectoryName(textBoxInputfile.Text);
+            }
             sfd.Filter = "MP4 file(*.mp4)|*.mp4";
             sfd.FilterIndex = 1;
-            sfd.Title = "Set output filename";
+            sfd.Title = "出力ファイル名(mp4)を設定してください。";
             sfd.RestoreDirectory = true;
             sfd.OverwritePrompt = true;
             if (sfd.ShowDialog() == DialogResult.OK)
@@ -439,7 +463,7 @@ namespace talk_face_movie2
             ofd.FileName = "ffmpeg.exe";
             ofd.Filter = "ffmpeg.exe|ffmpeg.exe";
             ofd.FilterIndex = 1;
-            ofd.Title = "Select installed ffmpeg.exe";
+            ofd.Title = "インストールされたffmpeg.exeを設定してください。";
             ofd.CheckFileExists = true;
             ofd.CheckPathExists = true;
             if (ofd.ShowDialog() == DialogResult.OK)
@@ -451,10 +475,19 @@ namespace talk_face_movie2
         private void buttonImageDir_Click(object sender, EventArgs e)
         {
             OpenFileDialog ofd = new OpenFileDialog();
+            if (textBoxImagedir.Text == "image\\")
+            {
+                string exe_dir = Directory.GetParent(Assembly.GetExecutingAssembly().Location).ToString();
+                ofd.InitialDirectory = Path.Combine(exe_dir, "image");
+            }
+            else if (textBoxImagedir.Text != "" && Directory.Exists(textBoxImagedir.Text))
+            {
+                ofd.InitialDirectory = Path.GetDirectoryName(textBoxInputfile.Text);
+            }
             ofd.FileName = "";
             ofd.Filter = "face_1.png|face_1.png";
             ofd.FilterIndex = 1;
-            ofd.Title = "Select face_1.png in image folder.";
+            ofd.Title = "顔画像フォルダのface_1.pngを指定してください。";
             ofd.RestoreDirectory = true;
             ofd.CheckFileExists = true;
             ofd.CheckPathExists = true;

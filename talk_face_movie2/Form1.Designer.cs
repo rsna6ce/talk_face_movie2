@@ -52,6 +52,7 @@ namespace talk_face_movie2
             this.label8 = new System.Windows.Forms.Label();
             this.textBoxFfmpeg = new System.Windows.Forms.TextBox();
             this.buttonFfmpeg = new System.Windows.Forms.Button();
+            this.labelProgressbar = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownFramerate)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownBlinkInterval)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownLargeThreshold)).BeginInit();
@@ -62,19 +63,19 @@ namespace talk_face_movie2
             // 
             this.buttonRun.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonRun.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.buttonRun.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.buttonRun.Location = new System.Drawing.Point(428, 112);
             this.buttonRun.Name = "buttonRun";
-            this.buttonRun.Size = new System.Drawing.Size(268, 44);
+            this.buttonRun.Size = new System.Drawing.Size(571, 44);
             this.buttonRun.TabIndex = 0;
-            this.buttonRun.Text = "Start";
+            this.buttonRun.Text = "変換開始";
             this.buttonRun.UseVisualStyleBackColor = true;
             this.buttonRun.Click += new System.EventHandler(this.button1_Click);
             // 
             // buttonInputfile
             // 
             this.buttonInputfile.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonInputfile.Location = new System.Drawing.Point(668, 4);
+            this.buttonInputfile.Location = new System.Drawing.Point(971, 4);
             this.buttonInputfile.Name = "buttonInputfile";
             this.buttonInputfile.Size = new System.Drawing.Size(28, 23);
             this.buttonInputfile.TabIndex = 1;
@@ -85,7 +86,7 @@ namespace talk_face_movie2
             // buttonOutputfile
             // 
             this.buttonOutputfile.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonOutputfile.Location = new System.Drawing.Point(668, 32);
+            this.buttonOutputfile.Location = new System.Drawing.Point(971, 32);
             this.buttonOutputfile.Name = "buttonOutputfile";
             this.buttonOutputfile.Size = new System.Drawing.Size(28, 23);
             this.buttonOutputfile.TabIndex = 2;
@@ -96,7 +97,7 @@ namespace talk_face_movie2
             // buttonImageDir
             // 
             this.buttonImageDir.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonImageDir.Location = new System.Drawing.Point(668, 60);
+            this.buttonImageDir.Location = new System.Drawing.Point(971, 60);
             this.buttonImageDir.Name = "buttonImageDir";
             this.buttonImageDir.Size = new System.Drawing.Size(28, 23);
             this.buttonImageDir.TabIndex = 3;
@@ -109,9 +110,9 @@ namespace talk_face_movie2
             this.textBoxInputfile.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.textBoxInputfile.Font = new System.Drawing.Font("ＭＳ ゴシック", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.textBoxInputfile.Location = new System.Drawing.Point(116, 8);
+            this.textBoxInputfile.Location = new System.Drawing.Point(128, 8);
             this.textBoxInputfile.Name = "textBoxInputfile";
-            this.textBoxInputfile.Size = new System.Drawing.Size(548, 19);
+            this.textBoxInputfile.Size = new System.Drawing.Size(839, 19);
             this.textBoxInputfile.TabIndex = 4;
             // 
             // textBoxOutputfile
@@ -119,9 +120,9 @@ namespace talk_face_movie2
             this.textBoxOutputfile.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.textBoxOutputfile.Font = new System.Drawing.Font("ＭＳ ゴシック", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.textBoxOutputfile.Location = new System.Drawing.Point(116, 36);
+            this.textBoxOutputfile.Location = new System.Drawing.Point(128, 36);
             this.textBoxOutputfile.Name = "textBoxOutputfile";
-            this.textBoxOutputfile.Size = new System.Drawing.Size(548, 19);
+            this.textBoxOutputfile.Size = new System.Drawing.Size(839, 19);
             this.textBoxOutputfile.TabIndex = 5;
             // 
             // textBoxImagedir
@@ -129,15 +130,15 @@ namespace talk_face_movie2
             this.textBoxImagedir.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.textBoxImagedir.Font = new System.Drawing.Font("ＭＳ ゴシック", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.textBoxImagedir.Location = new System.Drawing.Point(116, 60);
+            this.textBoxImagedir.Location = new System.Drawing.Point(128, 60);
             this.textBoxImagedir.Name = "textBoxImagedir";
-            this.textBoxImagedir.Size = new System.Drawing.Size(548, 19);
+            this.textBoxImagedir.Size = new System.Drawing.Size(839, 19);
             this.textBoxImagedir.TabIndex = 6;
             this.textBoxImagedir.Text = "image\\";
             // 
             // numericUpDownFramerate
             // 
-            this.numericUpDownFramerate.Location = new System.Drawing.Point(116, 112);
+            this.numericUpDownFramerate.Location = new System.Drawing.Point(128, 112);
             this.numericUpDownFramerate.Maximum = new decimal(new int[] {
             60,
             0,
@@ -159,7 +160,7 @@ namespace talk_face_movie2
             // 
             // numericUpDownBlinkInterval
             // 
-            this.numericUpDownBlinkInterval.Location = new System.Drawing.Point(116, 140);
+            this.numericUpDownBlinkInterval.Location = new System.Drawing.Point(128, 140);
             this.numericUpDownBlinkInterval.Maximum = new decimal(new int[] {
             10000,
             0,
@@ -181,7 +182,7 @@ namespace talk_face_movie2
             // 
             // numericUpDownLargeThreshold
             // 
-            this.numericUpDownLargeThreshold.Location = new System.Drawing.Point(328, 112);
+            this.numericUpDownLargeThreshold.Location = new System.Drawing.Point(352, 112);
             this.numericUpDownLargeThreshold.Maximum = new decimal(new int[] {
             99,
             0,
@@ -203,7 +204,7 @@ namespace talk_face_movie2
             // 
             // numericUpDownSmallThreshold
             // 
-            this.numericUpDownSmallThreshold.Location = new System.Drawing.Point(328, 140);
+            this.numericUpDownSmallThreshold.Location = new System.Drawing.Point(352, 140);
             this.numericUpDownSmallThreshold.Maximum = new decimal(new int[] {
             99,
             0,
@@ -228,63 +229,63 @@ namespace talk_face_movie2
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(8, 116);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(86, 12);
+            this.label1.Size = new System.Drawing.Size(97, 12);
             this.label1.TabIndex = 11;
-            this.label1.Text = "frame rate [fps]";
+            this.label1.Text = "フレームレート [fps]";
             // 
             // label2
             // 
             this.label2.AutoSize = true;
             this.label2.Location = new System.Drawing.Point(8, 144);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(99, 12);
+            this.label2.Size = new System.Drawing.Size(77, 12);
             this.label2.TabIndex = 12;
-            this.label2.Text = "brink interval [ms]";
+            this.label2.Text = "瞬き間隔 [ms]";
             // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(224, 116);
+            this.label3.Location = new System.Drawing.Point(252, 116);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(99, 12);
+            this.label3.Size = new System.Drawing.Size(90, 12);
             this.label3.TabIndex = 13;
-            this.label3.Text = "large threshold [%]";
+            this.label3.Text = "大きい口音量 [%]";
             // 
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(224, 144);
+            this.label4.Location = new System.Drawing.Point(252, 144);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(101, 12);
+            this.label4.Size = new System.Drawing.Size(89, 12);
             this.label4.TabIndex = 14;
-            this.label4.Text = "small threshold [%]";
+            this.label4.Text = "小さい口音量 [%]";
             // 
             // label5
             // 
             this.label5.AutoSize = true;
             this.label5.Location = new System.Drawing.Point(8, 12);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(77, 12);
+            this.label5.Size = new System.Drawing.Size(118, 12);
             this.label5.TabIndex = 15;
-            this.label5.Text = "input filename";
+            this.label5.Text = "入力ファイル(wav/mp3)";
             // 
             // label6
             // 
             this.label6.AutoSize = true;
             this.label6.Location = new System.Drawing.Point(8, 40);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(84, 12);
+            this.label6.Size = new System.Drawing.Size(92, 12);
             this.label6.TabIndex = 16;
-            this.label6.Text = "output filename";
+            this.label6.Text = "出力ファイル(mp4)";
             // 
             // label7
             // 
             this.label7.AutoSize = true;
             this.label7.Location = new System.Drawing.Point(8, 64);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(84, 12);
+            this.label7.Size = new System.Drawing.Size(76, 12);
             this.label7.TabIndex = 17;
-            this.label7.Text = "image directory";
+            this.label7.Text = "顔画像フォルダ";
             // 
             // textBoxLog
             // 
@@ -296,7 +297,7 @@ namespace talk_face_movie2
             this.textBoxLog.Name = "textBoxLog";
             this.textBoxLog.ReadOnly = true;
             this.textBoxLog.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.textBoxLog.Size = new System.Drawing.Size(688, 160);
+            this.textBoxLog.Size = new System.Drawing.Size(991, 192);
             this.textBoxLog.TabIndex = 18;
             // 
             // label8
@@ -304,25 +305,25 @@ namespace talk_face_movie2
             this.label8.AutoSize = true;
             this.label8.Location = new System.Drawing.Point(8, 88);
             this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(66, 12);
+            this.label8.Size = new System.Drawing.Size(59, 12);
             this.label8.TabIndex = 19;
-            this.label8.Text = "ffmpeg path";
+            this.label8.Text = "ffmpegパス";
             // 
             // textBoxFfmpeg
             // 
             this.textBoxFfmpeg.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.textBoxFfmpeg.Font = new System.Drawing.Font("ＭＳ ゴシック", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.textBoxFfmpeg.Location = new System.Drawing.Point(116, 84);
+            this.textBoxFfmpeg.Location = new System.Drawing.Point(128, 84);
             this.textBoxFfmpeg.Name = "textBoxFfmpeg";
-            this.textBoxFfmpeg.Size = new System.Drawing.Size(548, 19);
+            this.textBoxFfmpeg.Size = new System.Drawing.Size(839, 19);
             this.textBoxFfmpeg.TabIndex = 20;
             this.textBoxFfmpeg.Text = "ffmpeg.exe";
             // 
             // buttonFfmpeg
             // 
             this.buttonFfmpeg.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonFfmpeg.Location = new System.Drawing.Point(668, 84);
+            this.buttonFfmpeg.Location = new System.Drawing.Point(971, 84);
             this.buttonFfmpeg.Name = "buttonFfmpeg";
             this.buttonFfmpeg.Size = new System.Drawing.Size(28, 23);
             this.buttonFfmpeg.TabIndex = 21;
@@ -330,11 +331,20 @@ namespace talk_face_movie2
             this.buttonFfmpeg.UseVisualStyleBackColor = true;
             this.buttonFfmpeg.Click += new System.EventHandler(this.buttonFfmpeg_Click);
             // 
+            // labelProgressbar
+            // 
+            this.labelProgressbar.BackColor = System.Drawing.Color.Red;
+            this.labelProgressbar.Location = new System.Drawing.Point(428, 156);
+            this.labelProgressbar.Name = "labelProgressbar";
+            this.labelProgressbar.Size = new System.Drawing.Size(568, 4);
+            this.labelProgressbar.TabIndex = 22;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(705, 331);
+            this.ClientSize = new System.Drawing.Size(1008, 361);
+            this.Controls.Add(this.labelProgressbar);
             this.Controls.Add(this.buttonFfmpeg);
             this.Controls.Add(this.textBoxFfmpeg);
             this.Controls.Add(this.label8);
@@ -396,6 +406,7 @@ namespace talk_face_movie2
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.TextBox textBoxFfmpeg;
         private System.Windows.Forms.Button buttonFfmpeg;
+        private System.Windows.Forms.Label labelProgressbar;
     }
 }
 
