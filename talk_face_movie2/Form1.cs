@@ -14,6 +14,8 @@ using System.Diagnostics;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
 
+using WaveRead;
+
 namespace talk_face_movie2
 {
     public partial class Form1 : Form
@@ -28,13 +30,22 @@ namespace talk_face_movie2
         private void button1_Click(object sender, EventArgs e)
         {
             textBoxLog.Text = "";
-
+            // 入力ファイルチェック
             if (File.Exists(textBoxInputfile.Text) == false)
             {
                 MessageBox.Show("入力ファイルが見つかりません。\n\n" + textBoxInputfile.Text, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
-
+            // 出力ファイルチェック
+            if (textBoxOutputfile.Text == "" )
+            {
+                MessageBox.Show("出力ファイルを設定してください。", "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            //出力フォルダを作っておく
+            string output_dir = Path.GetDirectoryName(textBoxOutputfile.Text);
+            Directory.CreateDirectory(output_dir);
+            // 画像フォルダチェック
             string exe_dir = Directory.GetParent(Assembly.GetExecutingAssembly().Location).ToString();
             string image_dir = textBoxImagedir.Text;
             if (image_dir.IndexOf(":") < 0)
@@ -55,6 +66,7 @@ namespace talk_face_movie2
                     return;
                 }
             }
+            // ffmpegチェック
             if (File.Exists(textBoxFfmpeg.Text) == false)
             {
                 if (ExistFileWithPathEnv(textBoxFfmpeg.Text) == false)
@@ -63,6 +75,8 @@ namespace talk_face_movie2
                     return;
                 }
             }
+
+            //入力ファイルがmp3の場合、中間wavファイルに変換する
             string filename_input = textBoxInputfile.Text;
             string filename_temp_wav = "";
             if (Path.GetExtension(filename_input).ToString().ToLower() == ".mp3")
@@ -109,27 +123,34 @@ namespace talk_face_movie2
                 return;
             }
 
-
-            WaveReadSample.WaveReadSample wrs = new WaveReadSample.WaveReadSample();
-
             // clean up temp dir
             string temp_dir = Path.Combine(exe_dir, "temp");
+            Directory.CreateDirectory(temp_dir); // うっかりtempフォルダ消してしまった時のリカバリ
             foreach (string filename in Directory.GetFiles(temp_dir, "*.png"))
             {
                 File.Delete(filename);
             }
 
-            string temp_mp4 = Path.Combine(exe_dir, "temp.mp4");
+            string temp_mp4 = Path.Combine(exe_dir, "_temp_without_sound.mp4");
             string filename_close = Path.Combine(image_dir, "face_1.png");
             string filename_small = Path.Combine(image_dir, "face_2.png");
             string filename_large = Path.Combine(image_dir, "face_3.png");
             string filename_blink = Path.Combine(image_dir, "face_4.png");
 
-            wrs.ReadWave(filename_input);
-            WaveReadSample.WaveHeaderArgs wha = wrs.GetHeader();
+            WavFileReader wavReader = new WavFileReader();
+            try
+            {
+                wavReader.ReadWavFile(filename_input);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Wavファイル読み込みに失敗しました。", "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                print_textbox(ex.Message);
+                return;
+            }
 
-            int data_length = wrs._waveData.Length;
-            int sample_rate = wha.SampleRate;
+            int data_length = wavReader.WaveformData.Length;
+            int sample_rate = (int)wavReader.Header.SampleRate;
             int sample_interval = sample_rate / (int)numericUpDownFramerate.Value;
             int sample_count = 0;
             double signal_peak = 0;
@@ -147,7 +168,7 @@ namespace talk_face_movie2
                 progress_percent = (int)(i * 80.0 / data_length);
                 SetProgressbar(progress_percent);
 
-                int value = (int)wrs._waveData[i];
+                int value = (int)wavReader.WaveformData[i];
                 double value_d = (double)value / (double)((1 << 15) - 1);
                 signal_peak = Math.Max(signal_peak, Math.Abs(value_d));
                 sample_count++;
@@ -318,9 +339,13 @@ namespace talk_face_movie2
                 File.Delete(filename_temp_wav);
             }
             print_textbox("OUTPUT: " + textBoxOutputfile.Text);
-            print_textbox("finished !!");
+            print_textbox("\nfinished !!");
             SetProgressbar(100);
-            MessageBox.Show("変換完了！！", "OK", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            var ret = MessageBox.Show("変換完了！！\n\n出力ファイルのフォルダを開きますか？", "Success", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
+            if (ret == DialogResult.Yes)
+            {
+                Process.Start("explorer.exe", output_dir);
+            }
         }
 
         private void print_textbox(string text, bool newline = true)
