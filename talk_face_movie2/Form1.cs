@@ -346,6 +346,7 @@ namespace talk_face_movie2
             {
                 Process.Start("explorer.exe", output_dir);
             }
+            SetProgressbar(0);
         }
 
         private void print_textbox(string text, bool newline = true)
@@ -440,8 +441,11 @@ namespace talk_face_movie2
 
         private void buttonInputfile_Click(object sender, EventArgs e)
         {
+            string exe_dir = Directory.GetParent(Assembly.GetExecutingAssembly().Location).ToString();
+
             OpenFileDialog ofd = new OpenFileDialog();
             ofd.FileName = "";
+            ofd.InitialDirectory = exe_dir;
             if (textBoxInputfile.Text != "" && File.Exists(textBoxInputfile.Text))
             {
                 ofd.InitialDirectory = Path.GetDirectoryName(textBoxInputfile.Text);

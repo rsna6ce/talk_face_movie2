@@ -67,7 +67,7 @@ namespace talk_face_movie2
             this.buttonRun.Location = new System.Drawing.Point(428, 112);
             this.buttonRun.Name = "buttonRun";
             this.buttonRun.Size = new System.Drawing.Size(571, 44);
-            this.buttonRun.TabIndex = 0;
+            this.buttonRun.TabIndex = 8;
             this.buttonRun.Text = "変換開始";
             this.buttonRun.UseVisualStyleBackColor = true;
             this.buttonRun.Click += new System.EventHandler(this.button1_Click);
@@ -78,7 +78,7 @@ namespace talk_face_movie2
             this.buttonInputfile.Location = new System.Drawing.Point(971, 4);
             this.buttonInputfile.Name = "buttonInputfile";
             this.buttonInputfile.Size = new System.Drawing.Size(28, 23);
-            this.buttonInputfile.TabIndex = 1;
+            this.buttonInputfile.TabIndex = 0;
             this.buttonInputfile.Text = "...";
             this.buttonInputfile.UseVisualStyleBackColor = true;
             this.buttonInputfile.Click += new System.EventHandler(this.buttonInputfile_Click);
@@ -89,7 +89,7 @@ namespace talk_face_movie2
             this.buttonOutputfile.Location = new System.Drawing.Point(971, 32);
             this.buttonOutputfile.Name = "buttonOutputfile";
             this.buttonOutputfile.Size = new System.Drawing.Size(28, 23);
-            this.buttonOutputfile.TabIndex = 2;
+            this.buttonOutputfile.TabIndex = 1;
             this.buttonOutputfile.Text = "...";
             this.buttonOutputfile.UseVisualStyleBackColor = true;
             this.buttonOutputfile.Click += new System.EventHandler(this.buttonOutputfile_Click);
@@ -100,7 +100,7 @@ namespace talk_face_movie2
             this.buttonImageDir.Location = new System.Drawing.Point(971, 60);
             this.buttonImageDir.Name = "buttonImageDir";
             this.buttonImageDir.Size = new System.Drawing.Size(28, 23);
-            this.buttonImageDir.TabIndex = 3;
+            this.buttonImageDir.TabIndex = 2;
             this.buttonImageDir.Text = "...";
             this.buttonImageDir.UseVisualStyleBackColor = true;
             this.buttonImageDir.Click += new System.EventHandler(this.buttonImageDir_Click);
@@ -114,6 +114,7 @@ namespace talk_face_movie2
             this.textBoxInputfile.Name = "textBoxInputfile";
             this.textBoxInputfile.Size = new System.Drawing.Size(839, 19);
             this.textBoxInputfile.TabIndex = 4;
+            this.textBoxInputfile.TabStop = false;
             // 
             // textBoxOutputfile
             // 
@@ -124,6 +125,7 @@ namespace talk_face_movie2
             this.textBoxOutputfile.Name = "textBoxOutputfile";
             this.textBoxOutputfile.Size = new System.Drawing.Size(839, 19);
             this.textBoxOutputfile.TabIndex = 5;
+            this.textBoxOutputfile.TabStop = false;
             // 
             // textBoxImagedir
             // 
@@ -134,6 +136,7 @@ namespace talk_face_movie2
             this.textBoxImagedir.Name = "textBoxImagedir";
             this.textBoxImagedir.Size = new System.Drawing.Size(839, 19);
             this.textBoxImagedir.TabIndex = 6;
+            this.textBoxImagedir.TabStop = false;
             this.textBoxImagedir.Text = "image\\";
             // 
             // numericUpDownFramerate
@@ -151,7 +154,7 @@ namespace talk_face_movie2
             0});
             this.numericUpDownFramerate.Name = "numericUpDownFramerate";
             this.numericUpDownFramerate.Size = new System.Drawing.Size(72, 19);
-            this.numericUpDownFramerate.TabIndex = 7;
+            this.numericUpDownFramerate.TabIndex = 4;
             this.numericUpDownFramerate.Value = new decimal(new int[] {
             15,
             0,
@@ -173,7 +176,7 @@ namespace talk_face_movie2
             0});
             this.numericUpDownBlinkInterval.Name = "numericUpDownBlinkInterval";
             this.numericUpDownBlinkInterval.Size = new System.Drawing.Size(72, 19);
-            this.numericUpDownBlinkInterval.TabIndex = 8;
+            this.numericUpDownBlinkInterval.TabIndex = 5;
             this.numericUpDownBlinkInterval.Value = new decimal(new int[] {
             2000,
             0,
@@ -195,7 +198,7 @@ namespace talk_face_movie2
             0});
             this.numericUpDownLargeThreshold.Name = "numericUpDownLargeThreshold";
             this.numericUpDownLargeThreshold.Size = new System.Drawing.Size(72, 19);
-            this.numericUpDownLargeThreshold.TabIndex = 9;
+            this.numericUpDownLargeThreshold.TabIndex = 6;
             this.numericUpDownLargeThreshold.Value = new decimal(new int[] {
             25,
             0,
@@ -217,7 +220,7 @@ namespace talk_face_movie2
             0});
             this.numericUpDownSmallThreshold.Name = "numericUpDownSmallThreshold";
             this.numericUpDownSmallThreshold.Size = new System.Drawing.Size(72, 19);
-            this.numericUpDownSmallThreshold.TabIndex = 10;
+            this.numericUpDownSmallThreshold.TabIndex = 7;
             this.numericUpDownSmallThreshold.Value = new decimal(new int[] {
             10,
             0,
@@ -291,6 +294,7 @@ namespace talk_face_movie2
             // 
             this.textBoxLog.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.textBoxLog.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.textBoxLog.Location = new System.Drawing.Point(8, 164);
             this.textBoxLog.MaxLength = 9999999;
             this.textBoxLog.Multiline = true;
@@ -299,6 +303,7 @@ namespace talk_face_movie2
             this.textBoxLog.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.textBoxLog.Size = new System.Drawing.Size(991, 192);
             this.textBoxLog.TabIndex = 18;
+            this.textBoxLog.TabStop = false;
             // 
             // label8
             // 
@@ -318,6 +323,7 @@ namespace talk_face_movie2
             this.textBoxFfmpeg.Name = "textBoxFfmpeg";
             this.textBoxFfmpeg.Size = new System.Drawing.Size(839, 19);
             this.textBoxFfmpeg.TabIndex = 20;
+            this.textBoxFfmpeg.TabStop = false;
             this.textBoxFfmpeg.Text = "ffmpeg.exe";
             // 
             // buttonFfmpeg
@@ -326,7 +332,7 @@ namespace talk_face_movie2
             this.buttonFfmpeg.Location = new System.Drawing.Point(971, 84);
             this.buttonFfmpeg.Name = "buttonFfmpeg";
             this.buttonFfmpeg.Size = new System.Drawing.Size(28, 23);
-            this.buttonFfmpeg.TabIndex = 21;
+            this.buttonFfmpeg.TabIndex = 3;
             this.buttonFfmpeg.Text = "...";
             this.buttonFfmpeg.UseVisualStyleBackColor = true;
             this.buttonFfmpeg.Click += new System.EventHandler(this.buttonFfmpeg_Click);
