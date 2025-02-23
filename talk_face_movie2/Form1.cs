@@ -511,7 +511,7 @@ namespace talk_face_movie2
             }
             else if (textBoxImagedir.Text != "" && Directory.Exists(textBoxImagedir.Text))
             {
-                ofd.InitialDirectory = Path.GetDirectoryName(textBoxInputfile.Text);
+                ofd.InitialDirectory = Path.GetDirectoryName(textBoxImagedir.Text);
             }
             ofd.FileName = "";
             ofd.Filter = "face_1.png|face_1.png";
