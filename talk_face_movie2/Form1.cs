@@ -344,7 +344,7 @@ namespace talk_face_movie2
             var ret = MessageBox.Show("変換完了！！\n\n出力ファイルのフォルダを開きますか？", "Success", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
             if (ret == DialogResult.Yes)
             {
-                Process.Start("explorer.exe", output_dir);
+                Process.Start("explorer.exe", "/select,\"" + textBoxOutputfile.Text + "\"");
             }
             SetProgressbar(0);
         }
@@ -511,7 +511,7 @@ namespace talk_face_movie2
             }
             else if (textBoxImagedir.Text != "" && Directory.Exists(textBoxImagedir.Text))
             {
-                ofd.InitialDirectory = Path.GetDirectoryName(textBoxImagedir.Text);
+                ofd.InitialDirectory = textBoxImagedir.Text;
             }
             ofd.FileName = "";
             ofd.Filter = "face_1.png|face_1.png";
