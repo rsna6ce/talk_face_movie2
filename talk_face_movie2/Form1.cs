@@ -66,6 +66,22 @@ namespace talk_face_movie2
                     return;
                 }
             }
+            // 画像ファイルサイズチェック
+            string filename_close = Path.Combine(image_dir, "face_1.png");
+            string filename_small = Path.Combine(image_dir, "face_2.png");
+            string filename_large = Path.Combine(image_dir, "face_3.png");
+            string filename_blink = Path.Combine(image_dir, "face_4.png");
+            Bitmap bmp = new Bitmap(filename_close);
+            int width = bmp.Width;
+            int height = bmp.Height;
+            bmp.Dispose();
+            if (width % 2 !=0 || height % 2 != 0)
+            {
+                MessageBox.Show("顔画像の幅と高さは偶数である必要があります。\n\n" + 
+                    "幅:" + width.ToString() + ", 高さ:" + height.ToString(), "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
             // ffmpegチェック
             if (File.Exists(textBoxFfmpeg.Text) == false)
             {
@@ -132,11 +148,6 @@ namespace talk_face_movie2
             }
 
             string temp_mp4 = Path.Combine(exe_dir, "_temp_without_sound.mp4");
-            string filename_close = Path.Combine(image_dir, "face_1.png");
-            string filename_small = Path.Combine(image_dir, "face_2.png");
-            string filename_large = Path.Combine(image_dir, "face_3.png");
-            string filename_blink = Path.Combine(image_dir, "face_4.png");
-
             WavFileReader wavReader = new WavFileReader();
             try
             {
@@ -249,10 +260,6 @@ namespace talk_face_movie2
             // encode with ffmpeg
             print_textbox("encoding with ffmpeg...");
             int frame_rate = (int)numericUpDownFramerate.Value;
-            Bitmap bmp = new Bitmap(filename_close);
-            int width = bmp.Width;
-            int height = bmp.Height;
-            bmp.Dispose();
             {
                 ProcessStartInfo processInfo = new ProcessStartInfo
                 {
