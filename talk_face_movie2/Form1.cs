@@ -348,7 +348,7 @@ namespace talk_face_movie2
             print_textbox("OUTPUT: " + textBoxOutputfile.Text);
             print_textbox("\nfinished !!");
             SetProgressbar(100);
-            var ret = MessageBox.Show("変換完了！！\n\n出力ファイルのフォルダを開きますか？", "Success", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
+            var ret = MessageBox.Show("変換完了！！\n\n出力ファイルのフォルダを開きますか？", "Success", MessageBoxButtons.YesNo, MessageBoxIcon.Information,MessageBoxDefaultButton.Button2);
             if (ret == DialogResult.Yes)
             {
                 Process.Start("explorer.exe", "/select,\"" + textBoxOutputfile.Text + "\"");
