@@ -22,6 +22,16 @@ namespace talk_face_movie2
     {
         private const string param_json_name = @"param.json";
 
+        // 追加: CSVの時間範囲を保持する構造体
+        private struct TimeRange
+        {
+            public double From { get; set; }
+            public double To { get; set; }
+        }
+
+        // 追加: CSVから読み込んだ時間範囲リスト
+        private List<TimeRange> timeRanges;
+
         public Form1()
         {
             InitializeComponent();
@@ -37,7 +47,7 @@ namespace talk_face_movie2
                 return;
             }
             // 出力ファイルチェック
-            if (textBoxOutputfile.Text == "" )
+            if (textBoxOutputfile.Text == "")
             {
                 MessageBox.Show("出力ファイルを設定してください。", "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
@@ -75,9 +85,9 @@ namespace talk_face_movie2
             int width = bmp.Width;
             int height = bmp.Height;
             bmp.Dispose();
-            if (width % 2 !=0 || height % 2 != 0)
+            if (width % 2 != 0 || height % 2 != 0)
             {
-                MessageBox.Show("顔画像の幅と高さは偶数である必要があります。\n\n" + 
+                MessageBox.Show("顔画像の幅と高さは偶数である必要があります。\n\n" +
                     "幅:" + width.ToString() + ", 高さ:" + height.ToString(), "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
@@ -88,6 +98,50 @@ namespace talk_face_movie2
                 if (ExistFileWithPathEnv(textBoxFfmpeg.Text) == false)
                 {
                     MessageBox.Show("ffmpegが見つかりません。\n\n" + textBoxFfmpeg.Text, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+            }
+
+            // 追加: CSVファイルの読み込みとバリデーション
+            timeRanges = new List<TimeRange>();
+            if (cboTimestampMode.SelectedItem?.ToString() == "Person1" || cboTimestampMode.SelectedItem?.ToString() == "Person2")
+            {
+                if (string.IsNullOrEmpty(textBoxCsv.Text) || !File.Exists(textBoxCsv.Text))
+                {
+                    MessageBox.Show("CSVファイルが選択されていません。\n\n" + textBoxCsv.Text, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
+                try
+                {
+                    string[] csvLines = File.ReadAllLines(textBoxCsv.Text);
+                    if (csvLines.Length < 1 || csvLines[0].Trim() != "from,to")
+                    {
+                        MessageBox.Show("CSVファイルのヘッダが正しくありません。'from,to'である必要があります。", "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+
+                    for (int i = 1; i < csvLines.Length; i++)
+                    {
+                        string[] values = csvLines[i].Split(',');
+                        if (values.Length != 2)
+                        {
+                            MessageBox.Show($"CSVファイルの行{i}のフォーマットが正しくありません。", "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            return;
+                        }
+
+                        if (!double.TryParse(values[0], out double fromTime) || !double.TryParse(values[1], out double toTime))
+                        {
+                            MessageBox.Show($"CSVファイルの行{i}の時間値が数値に変換できません。", "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            return;
+                        }
+
+                        timeRanges.Add(new TimeRange { From = fromTime, To = toTime });
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("CSVファイルの読み込みに失敗しました。\n\n" + ex.Message, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
             }
@@ -181,24 +235,38 @@ namespace talk_face_movie2
 
                 int value = (int)wavReader.WaveformData[i];
                 double value_d = (double)value / (double)((1 << 15) - 1);
+
+                // 追加: msec, min, secの計算をif文の外に移動
+                double div = (double)i / (double)sample_rate;
+                double secd = Math.Floor(div);
+                double msec = div;
+                int min = (int)secd / 60;
+                int sec = (int)secd % 60;
+
+                // 追加: 時間範囲の判定とミュート処理
+                bool isInRange = timeRanges.Any(range => msec >= range.From && msec <= range.To);
+                if (cboTimestampMode.SelectedItem?.ToString() == "Person1" && isInRange)
+                {
+                    value_d = 0; // Person1: 範囲内をミュート
+                }
+                else if (cboTimestampMode.SelectedItem?.ToString() == "Person2" && !isInRange)
+                {
+                    value_d = 0; // Person2: 範囲外をミュート
+                }
+
                 signal_peak = Math.Max(signal_peak, Math.Abs(value_d));
                 sample_count++;
+
                 if (sample_count >= sample_interval)
                 {
                     string frame_number_with_zero = frame_number.ToString("D8");
-                    double div = (double)frame_number / (double)numericUpDownFramerate.Value;
-                    double secd = Math.Floor(div);
-                    double msec = div - secd;
-                    int min = (int)secd / 60;
-                    int sec = (int)secd % 60;
-                    string msec_with_zero = ((int)(msec * 1000)).ToString("D3");
+                    string msec_with_zero = ((int)((msec - secd) * 1000)).ToString("D3");
                     string sec_with_zero = sec.ToString("D2");
                     string min_with_zero = min.ToString("D3");
-                    print_textbox(string.Format("{0} ({1}:{2}:{3}) {4:F3}  ", 
+                    print_textbox(string.Format("{0} ({1}:{2}:{3}) {4:F3}  ",
                         frame_number_with_zero, min_with_zero, sec_with_zero, msec_with_zero, signal_peak), false);
                     string temp_filename = temp_dir + @"\" + frame_number_with_zero + ".png";
                     frame_number++;
-
 
                     if (signal_peak < small_threshold)
                     {
@@ -348,7 +416,7 @@ namespace talk_face_movie2
             print_textbox("OUTPUT: " + textBoxOutputfile.Text);
             print_textbox("\nfinished !!");
             SetProgressbar(100);
-            var ret = MessageBox.Show("変換完了！！\n\n出力ファイルのフォルダを開きますか？", "Success", MessageBoxButtons.YesNo, MessageBoxIcon.Information,MessageBoxDefaultButton.Button2);
+            var ret = MessageBox.Show("変換完了！！\n\n出力ファイルのフォルダを開きますか？", "Success", MessageBoxButtons.YesNo, MessageBoxIcon.Information, MessageBoxDefaultButton.Button2);
             if (ret == DialogResult.Yes)
             {
                 Process.Start("explorer.exe", "/select,\"" + textBoxOutputfile.Text + "\"");
@@ -384,7 +452,7 @@ namespace talk_face_movie2
                         return true;
                     }
                 }
-                catch 
+                catch
                 {
                     // error 
                     return false;
@@ -402,9 +470,14 @@ namespace talk_face_movie2
                 labelProgressbar.Refresh();
             }
         }
+
         private void Form1_Load(object sender, EventArgs e)
         {
             SetProgressbar(0);
+            // 追加: cboTimestampModeの初期化
+            cboTimestampMode.Items.AddRange(new string[] { "None", "Person1", "Person2" });
+            cboTimestampMode.SelectedIndex = 0; // デフォルトは"None"
+
             if (File.Exists(param_json_name))
             {
                 using (var ms = new FileStream(param_json_name, FileMode.Open))
@@ -415,6 +488,7 @@ namespace talk_face_movie2
                     textBoxInputfile.Text = p.input_filename;
                     textBoxOutputfile.Text = p.output_filename;
                     textBoxFfmpeg.Text = p.ffmpeg;
+                    textBoxCsv.Text = p.csv_filename; // 追加: CSVファイル名読み込み
                     numericUpDownFramerate.Value = p.frame_rate;
                     numericUpDownSmallThreshold.Value = p.small_threshold;
                     numericUpDownLargeThreshold.Value = p.large_threshold;
@@ -430,6 +504,7 @@ namespace talk_face_movie2
             p.input_filename = textBoxInputfile.Text;
             p.output_filename = textBoxOutputfile.Text;
             p.ffmpeg = textBoxFfmpeg.Text;
+            p.csv_filename = textBoxCsv.Text; // 追加: CSVファイル名保存
             p.frame_rate = (int)numericUpDownFramerate.Value;
             p.small_threshold = (int)numericUpDownSmallThreshold.Value;
             p.large_threshold = (int)numericUpDownLargeThreshold.Value;
@@ -533,6 +608,29 @@ namespace talk_face_movie2
             }
         }
 
+        // 追加: buttonCsv_Clickの実装
+        private void buttonCsv_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog ofd = new OpenFileDialog();
+            ofd.FileName = "";
+            string exe_dir = Directory.GetParent(Assembly.GetExecutingAssembly().Location).ToString();
+            ofd.InitialDirectory = exe_dir;
+            if (!string.IsNullOrEmpty(textBoxCsv.Text) && File.Exists(textBoxCsv.Text))
+            {
+                ofd.InitialDirectory = Path.GetDirectoryName(textBoxCsv.Text);
+            }
+            ofd.Filter = "CSV file(*.csv)|*.csv";
+            ofd.FilterIndex = 1;
+            ofd.Title = "タイムスタンプCSVファイルを選択してください。";
+            ofd.RestoreDirectory = true;
+            ofd.CheckFileExists = true;
+            ofd.CheckPathExists = true;
+            if (ofd.ShowDialog() == DialogResult.OK)
+            {
+                textBoxCsv.Text = ofd.FileName;
+            }
+        }
+
         [DataContract]
         public class Params
         {
@@ -547,6 +645,9 @@ namespace talk_face_movie2
             public string ffmpeg { get; set; }
 
             [DataMember]
+            public string csv_filename { get; set; } // 追加: CSVファイル名
+
+            [DataMember]
             public int frame_rate { get; set; }
 
             [DataMember]
@@ -557,12 +658,6 @@ namespace talk_face_movie2
 
             [DataMember]
             public int blink_interval { get; set; }
-
-        }
-
-        private void buttonCsv_Click(object sender, EventArgs e)
-        {
-
         }
     }
 }

@@ -385,10 +385,6 @@ namespace talk_face_movie2
             // 
             this.cboTimestampMode.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cboTimestampMode.FormattingEnabled = true;
-            this.cboTimestampMode.Items.AddRange(new object[] {
-            "None",
-            "Person1",
-            "Person2"});
             this.cboTimestampMode.Location = new System.Drawing.Point(128, 140);
             this.cboTimestampMode.Name = "cboTimestampMode";
             this.cboTimestampMode.Size = new System.Drawing.Size(72, 20);
