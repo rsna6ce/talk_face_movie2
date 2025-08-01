@@ -365,6 +365,19 @@ namespace talk_face_movie2
 
             // mux sound with ffmpeg
             print_textbox("muxing sound with ffmpeg...");
+            string outputFileName = textBoxOutputfile.Text;
+            if (cboTimestampMode.SelectedItem?.ToString() == "Person1")
+            {
+                string dir = Path.GetDirectoryName(textBoxOutputfile.Text);
+                string name = Path.GetFileNameWithoutExtension(textBoxOutputfile.Text);
+                outputFileName = Path.Combine(dir, $"{name}_person1.mp4");
+            }
+            else if (cboTimestampMode.SelectedItem?.ToString() == "Person2")
+            {
+                string dir = Path.GetDirectoryName(textBoxOutputfile.Text);
+                string name = Path.GetFileNameWithoutExtension(textBoxOutputfile.Text);
+                outputFileName = Path.Combine(dir, $"{name}_person2.mp4");
+            }
             {
                 ProcessStartInfo processInfo = new ProcessStartInfo
                 {
@@ -378,7 +391,7 @@ namespace talk_face_movie2
                                              "-map 0:v:0 " +
                                              "-map 1:a:0 " +
                                              "\"{2}\" ",
-                                             temp_mp4, filename_input, textBoxOutputfile.Text),
+                                             temp_mp4, filename_input, outputFileName),
                     UseShellExecute = false,
                     RedirectStandardOutput = true,
                     RedirectStandardError = true,
@@ -413,13 +426,13 @@ namespace talk_face_movie2
             {
                 File.Delete(filename_temp_wav);
             }
-            print_textbox("OUTPUT: " + textBoxOutputfile.Text);
+            print_textbox("OUTPUT: " + outputFileName);
             print_textbox("\nfinished !!");
             SetProgressbar(100);
             var ret = MessageBox.Show("変換完了！！\n\n出力ファイルのフォルダを開きますか？", "Success", MessageBoxButtons.YesNo, MessageBoxIcon.Information, MessageBoxDefaultButton.Button2);
             if (ret == DialogResult.Yes)
             {
-                Process.Start("explorer.exe", "/select,\"" + textBoxOutputfile.Text + "\"");
+                Process.Start("explorer.exe", "/select,\"" + outputFileName + "\"");
             }
             SetProgressbar(0);
         }
