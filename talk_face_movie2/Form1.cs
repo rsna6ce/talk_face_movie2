@@ -559,5 +559,10 @@ namespace talk_face_movie2
             public int blink_interval { get; set; }
 
         }
+
+        private void buttonCsv_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }
