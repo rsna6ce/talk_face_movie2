@@ -52,19 +52,24 @@ namespace talk_face_movie2
                 MessageBox.Show("出力ファイルを設定してください。", "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
-            //出力フォルダを作っておく
+            // 出力フォルダを作っておく
             string output_dir = Path.GetDirectoryName(textBoxOutputfile.Text);
             Directory.CreateDirectory(output_dir);
             // 画像フォルダチェック
             string exe_dir = Directory.GetParent(Assembly.GetExecutingAssembly().Location).ToString();
             string image_dir = textBoxImagedir.Text;
+            // 修正: Person2の場合、textBoxImagedir2を使用
+            if (cboTimestampMode.SelectedItem?.ToString() == "Person2")
+            {
+                image_dir = textBoxImagedir2.Text;
+            }
             if (image_dir.IndexOf(":") < 0)
             {
                 image_dir = exe_dir + @"\" + image_dir;
             }
             if (Directory.Exists(image_dir) == false)
             {
-                MessageBox.Show("顔画像フォルダが見つかりません。\n\n" + textBoxImagedir.Text, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("顔画像フォルダが見つかりません。\n\n" + image_dir, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
             for (int i = 1; i <= 4; i++)
@@ -498,6 +503,7 @@ namespace talk_face_movie2
                     var serializer = new DataContractJsonSerializer(typeof(Params));
                     var p = (Params)serializer.ReadObject(ms);
                     textBoxImagedir.Text = p.image_dir;
+                    textBoxImagedir2.Text = p.image_dir2;
                     textBoxInputfile.Text = p.input_filename;
                     textBoxOutputfile.Text = p.output_filename;
                     textBoxFfmpeg.Text = p.ffmpeg;
@@ -514,6 +520,7 @@ namespace talk_face_movie2
         {
             Params p = new Params();
             p.image_dir = textBoxImagedir.Text;
+            p.image_dir2 = textBoxImagedir2.Text;
             p.input_filename = textBoxInputfile.Text;
             p.output_filename = textBoxOutputfile.Text;
             p.ffmpeg = textBoxFfmpeg.Text;
@@ -620,6 +627,30 @@ namespace talk_face_movie2
                 textBoxImagedir.Text = Path.GetDirectoryName(ofd.FileName);
             }
         }
+        private void buttonImageDir2_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog ofd = new OpenFileDialog();
+            if (textBoxImagedir2.Text == "image\\")
+            {
+                string exe_dir = Directory.GetParent(Assembly.GetExecutingAssembly().Location).ToString();
+                ofd.InitialDirectory = Path.Combine(exe_dir, "image");
+            }
+            else if (textBoxImagedir2.Text != "" && Directory.Exists(textBoxImagedir2.Text))
+            {
+                ofd.InitialDirectory = textBoxImagedir2.Text;
+            }
+            ofd.FileName = "";
+            ofd.Filter = "face_1.png|face_1.png";
+            ofd.FilterIndex = 1;
+            ofd.Title = "顔画像フォルダのface_1.pngを指定してください。";
+            ofd.RestoreDirectory = true;
+            ofd.CheckFileExists = true;
+            ofd.CheckPathExists = true;
+            if (ofd.ShowDialog() == DialogResult.OK)
+            {
+                textBoxImagedir2.Text = Path.GetDirectoryName(ofd.FileName);
+            }
+        }
 
         // 追加: buttonCsv_Clickの実装
         private void buttonCsv_Click(object sender, EventArgs e)
@@ -649,6 +680,8 @@ namespace talk_face_movie2
         {
             [DataMember]
             public string image_dir { get; set; }
+            [DataMember]
+            public string image_dir2 { get; set; }
 
             [DataMember]
             public string input_filename { get; set; }
