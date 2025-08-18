@@ -10,10 +10,8 @@ using System.Windows.Forms;
 using System.IO;
 using System.Reflection;
 using System.Diagnostics;
-
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
-
 using WaveRead;
 
 namespace talk_face_movie2
@@ -37,32 +35,11 @@ namespace talk_face_movie2
             InitializeComponent();
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        // 新規メソッド: 動画生成処理を抽出
+        private bool ProcessVideo(string selectedMode, string image_dir, string outputFileName)
         {
-            textBoxLog.Text = "";
-            // 入力ファイルチェック
-            if (File.Exists(textBoxInputfile.Text) == false)
-            {
-                MessageBox.Show("入力ファイルが見つかりません。\n\n" + textBoxInputfile.Text, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-            // 出力ファイルチェック
-            if (textBoxOutputfile.Text == "")
-            {
-                MessageBox.Show("出力ファイルを設定してください。", "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-            // 出力フォルダを作っておく
-            string output_dir = Path.GetDirectoryName(textBoxOutputfile.Text);
-            Directory.CreateDirectory(output_dir);
-            // 画像フォルダチェック
             string exe_dir = Directory.GetParent(Assembly.GetExecutingAssembly().Location).ToString();
-            string image_dir = textBoxImagedir.Text;
-            // 修正: Person2の場合、textBoxImagedir2を使用
-            if (cboTimestampMode.SelectedItem?.ToString() == "Person2")
-            {
-                image_dir = textBoxImagedir2.Text;
-            }
+            // 画像フォルダチェック
             if (image_dir.IndexOf(":") < 0)
             {
                 image_dir = exe_dir + @"\" + image_dir;
@@ -70,7 +47,7 @@ namespace talk_face_movie2
             if (Directory.Exists(image_dir) == false)
             {
                 MessageBox.Show("顔画像フォルダが見つかりません。\n\n" + image_dir, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
+                return false;
             }
             for (int i = 1; i <= 4; i++)
             {
@@ -78,7 +55,7 @@ namespace talk_face_movie2
                 if (File.Exists(filename) == false)
                 {
                     MessageBox.Show("顔画像ファイルが見つかりません。\n\n" + filename, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
+                    return false;
                 }
             }
             // 画像ファイルサイズチェック
@@ -94,7 +71,7 @@ namespace talk_face_movie2
             {
                 MessageBox.Show("顔画像の幅と高さは偶数である必要があります。\n\n" +
                     "幅:" + width.ToString() + ", 高さ:" + height.ToString(), "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
+                return false;
             }
 
             // ffmpegチェック
@@ -103,18 +80,18 @@ namespace talk_face_movie2
                 if (ExistFileWithPathEnv(textBoxFfmpeg.Text) == false)
                 {
                     MessageBox.Show("ffmpegが見つかりません。\n\n" + textBoxFfmpeg.Text, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
+                    return false;
                 }
             }
 
-            // 追加: CSVファイルの読み込みとバリデーション
+            // CSVファイルの読み込みとバリデーション
             timeRanges = new List<TimeRange>();
-            if (cboTimestampMode.SelectedItem?.ToString() == "Person1" || cboTimestampMode.SelectedItem?.ToString() == "Person2")
+            if (selectedMode == "Person1" || selectedMode == "Person2")
             {
                 if (string.IsNullOrEmpty(textBoxCsv.Text) || !File.Exists(textBoxCsv.Text))
                 {
                     MessageBox.Show("CSVファイルが選択されていません。\n\n" + textBoxCsv.Text, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
+                    return false;
                 }
 
                 try
@@ -123,7 +100,7 @@ namespace talk_face_movie2
                     if (csvLines.Length < 1 || csvLines[0].Trim() != "from,to")
                     {
                         MessageBox.Show("CSVファイルのヘッダが正しくありません。'from,to'である必要があります。", "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        return;
+                        return false;
                     }
 
                     for (int i = 1; i < csvLines.Length; i++)
@@ -132,13 +109,13 @@ namespace talk_face_movie2
                         if (values.Length != 2)
                         {
                             MessageBox.Show($"CSVファイルの行{i}のフォーマットが正しくありません。", "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                            return;
+                            return false;
                         }
 
                         if (!double.TryParse(values[0], out double fromTime) || !double.TryParse(values[1], out double toTime))
                         {
                             MessageBox.Show($"CSVファイルの行{i}の時間値が数値に変換できません。", "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                            return;
+                            return false;
                         }
 
                         timeRanges.Add(new TimeRange { From = fromTime, To = toTime });
@@ -147,16 +124,15 @@ namespace talk_face_movie2
                 catch (Exception ex)
                 {
                     MessageBox.Show("CSVファイルの読み込みに失敗しました。\n\n" + ex.Message, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
+                    return false;
                 }
             }
 
-            //入力ファイルがmp3の場合、中間wavファイルに変換する
+            // 入力ファイルがmp3の場合、中間wavファイルに変換
             string filename_input = textBoxInputfile.Text;
             string filename_temp_wav = "";
             if (Path.GetExtension(filename_input).ToString().ToLower() == ".mp3")
             {
-                // ffmpeg -i "input.mp3" -vn -ac 2 -ar 44100 -acodec pcm_s16le -f wav "output.wav"
                 print_textbox("converting from mp3 to wav ...");
                 filename_temp_wav = Path.Combine(exe_dir, "temp_mp3_to_wav.wav");
                 ProcessStartInfo processInfo = new ProcessStartInfo
@@ -166,7 +142,6 @@ namespace talk_face_movie2
                                              "-y " +
                                              "-i \"{0}\" " +
                                              "-vn -ac 1 -ar 24000 " +
-                                             "-vcodec libx264 " +
                                              "-acodec pcm_s16le " +
                                              "-f wav " +
                                              "\"{1}\"",
@@ -189,18 +164,17 @@ namespace talk_face_movie2
                     if (!string.IsNullOrEmpty(error))
                         print_textbox(error);
                 }
-                // input file replace from mp3 to wav
                 filename_input = filename_temp_wav;
             }
             else if (Path.GetExtension(filename_input).ToString().ToLower() != ".wav")
             {
                 MessageBox.Show("入力されたファイル形式はサポートしていません。\n\n" + textBoxInputfile.Text, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
+                return false;
             }
 
-            // clean up temp dir
+            // テンポラリディレクトリをクリーンアップ
             string temp_dir = Path.Combine(exe_dir, "temp");
-            Directory.CreateDirectory(temp_dir); // うっかりtempフォルダ消してしまった時のリカバリ
+            Directory.CreateDirectory(temp_dir);
             foreach (string filename in Directory.GetFiles(temp_dir, "*.png"))
             {
                 File.Delete(filename);
@@ -216,7 +190,7 @@ namespace talk_face_movie2
             {
                 MessageBox.Show("Wavファイル読み込みに失敗しました。", "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 print_textbox(ex.Message);
-                return;
+                return false;
             }
 
             int data_length = wavReader.WaveformData.Length;
@@ -241,20 +215,18 @@ namespace talk_face_movie2
                 int value = (int)wavReader.WaveformData[i];
                 double value_d = (double)value / (double)((1 << 15) - 1);
 
-                // 追加: msec, min, secの計算をif文の外に移動
                 double div = (double)i / (double)sample_rate;
                 double secd = Math.Floor(div);
                 double msec = div;
                 int min = (int)secd / 60;
                 int sec = (int)secd % 60;
 
-                // 追加: 時間範囲の判定とミュート処理
                 bool isInRange = timeRanges.Any(range => msec >= range.From && msec <= range.To);
-                if (cboTimestampMode.SelectedItem?.ToString() == "Person1" && isInRange)
+                if (selectedMode == "Person1" && isInRange)
                 {
                     value_d = 0; // Person1: 範囲内をミュート
                 }
-                else if (cboTimestampMode.SelectedItem?.ToString() == "Person2" && !isInRange)
+                else if (selectedMode == "Person2" && !isInRange)
                 {
                     value_d = 0; // Person2: 範囲外をミュート
                 }
@@ -278,14 +250,12 @@ namespace talk_face_movie2
                         if (((i - latest_blink) * 1000 / sample_rate) > blink_interval)
                         {
                             latest_blink = i;
-                            // blink
                             File.Copy(filename_blink, temp_filename);
                             prev_style = "blink";
                             print_textbox("blink");
                         }
                         else
                         {
-                            //close face
                             File.Copy(filename_close, temp_filename);
                             prev_style = "close";
                             print_textbox("close");
@@ -293,10 +263,8 @@ namespace talk_face_movie2
                     }
                     else if (signal_peak < large_threshold)
                     {
-                        // small mouth
                         if (prev_style == "small")
                         {
-                            // numnum
                             File.Copy(filename_close, temp_filename);
                             prev_style = "close";
                             print_textbox("close(small)");
@@ -310,10 +278,8 @@ namespace talk_face_movie2
                     }
                     else
                     {
-                        // large mouth
                         if (prev_style == "large")
                         {
-                            // numnum
                             File.Copy(filename_small, temp_filename);
                             prev_style = "small";
                             print_textbox("small(large)");
@@ -370,19 +336,6 @@ namespace talk_face_movie2
 
             // mux sound with ffmpeg
             print_textbox("muxing sound with ffmpeg...");
-            string outputFileName = textBoxOutputfile.Text;
-            if (cboTimestampMode.SelectedItem?.ToString() == "Person1")
-            {
-                string dir = Path.GetDirectoryName(textBoxOutputfile.Text);
-                string name = Path.GetFileNameWithoutExtension(textBoxOutputfile.Text);
-                outputFileName = Path.Combine(dir, $"{name}_person1.mp4");
-            }
-            else if (cboTimestampMode.SelectedItem?.ToString() == "Person2")
-            {
-                string dir = Path.GetDirectoryName(textBoxOutputfile.Text);
-                string name = Path.GetFileNameWithoutExtension(textBoxOutputfile.Text);
-                outputFileName = Path.Combine(dir, $"{name}_person2.mp4");
-            }
             {
                 ProcessStartInfo processInfo = new ProcessStartInfo
                 {
@@ -433,6 +386,72 @@ namespace talk_face_movie2
             }
             print_textbox("OUTPUT: " + outputFileName);
             print_textbox("\nfinished !!");
+            return true;
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            textBoxLog.Text = "";
+            // 入力ファイルチェック
+            if (File.Exists(textBoxInputfile.Text) == false)
+            {
+                MessageBox.Show("入力ファイルが見つかりません。\n\n" + textBoxInputfile.Text, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            // 出力ファイルチェック
+            if (textBoxOutputfile.Text == "")
+            {
+                MessageBox.Show("出力ファイルを設定してください。", "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            // 出力フォルダを作っておく
+            string output_dir = Path.GetDirectoryName(textBoxOutputfile.Text);
+            Directory.CreateDirectory(output_dir);
+
+            string selectedMode = cboTimestampMode.SelectedItem?.ToString();
+            string outputFileName = textBoxOutputfile.Text;
+            if (selectedMode == "Person1&2")
+            {
+                // Person1の処理
+                string outputFileName1 = Path.Combine(Path.GetDirectoryName(textBoxOutputfile.Text),
+                    Path.GetFileNameWithoutExtension(textBoxOutputfile.Text) + "_person1.mp4");
+                if (!ProcessVideo("Person1", textBoxImagedir.Text, outputFileName1))
+                {
+                    return; // エラー発生時中断
+                }
+                // Person2の処理
+                string outputFileName2 = Path.Combine(Path.GetDirectoryName(textBoxOutputfile.Text),
+                    Path.GetFileNameWithoutExtension(textBoxOutputfile.Text) + "_person2.mp4");
+                if (!ProcessVideo("Person2", textBoxImagedir2.Text, outputFileName2))
+                {
+                    return; // エラー発生時中断
+                }
+                outputFileName = outputFileName2;
+            }
+            else
+            {
+                // 既存のモード（None, Person1, Person2）
+                string image_dir = textBoxImagedir.Text;
+                if (selectedMode == "Person2")
+                {
+                    image_dir = textBoxImagedir2.Text;
+                }
+                if (selectedMode == "Person1")
+                {
+                    outputFileName = Path.Combine(Path.GetDirectoryName(textBoxOutputfile.Text),
+                        Path.GetFileNameWithoutExtension(textBoxOutputfile.Text) + "_person1.mp4");
+                }
+                else if (selectedMode == "Person2")
+                {
+                    outputFileName = Path.Combine(Path.GetDirectoryName(textBoxOutputfile.Text),
+                        Path.GetFileNameWithoutExtension(textBoxOutputfile.Text) + "_person2.mp4");
+                }
+                if (!ProcessVideo(selectedMode, image_dir, outputFileName))
+                {
+                    return;
+                }
+            }
+
             SetProgressbar(100);
             var ret = MessageBox.Show("変換完了！！\n\n出力ファイルのフォルダを開きますか？", "Success", MessageBoxButtons.YesNo, MessageBoxIcon.Information, MessageBoxDefaultButton.Button2);
             if (ret == DialogResult.Yes)
@@ -492,8 +511,8 @@ namespace talk_face_movie2
         private void Form1_Load(object sender, EventArgs e)
         {
             SetProgressbar(0);
-            // 追加: cboTimestampModeの初期化
-            cboTimestampMode.Items.AddRange(new string[] { "None", "Person1", "Person2" });
+            // cboTimestampModeの初期化（Person1&2を追加）
+            cboTimestampMode.Items.AddRange(new string[] { "None", "Person1", "Person2", "Person1&2" });
             cboTimestampMode.SelectedIndex = 0; // デフォルトは"None"
 
             if (File.Exists(param_json_name))
@@ -507,7 +526,7 @@ namespace talk_face_movie2
                     textBoxInputfile.Text = p.input_filename;
                     textBoxOutputfile.Text = p.output_filename;
                     textBoxFfmpeg.Text = p.ffmpeg;
-                    textBoxCsv.Text = p.csv_filename; // 追加: CSVファイル名読み込み
+                    textBoxCsv.Text = p.csv_filename;
                     numericUpDownFramerate.Value = p.frame_rate;
                     numericUpDownSmallThreshold.Value = p.small_threshold;
                     numericUpDownLargeThreshold.Value = p.large_threshold;
@@ -524,7 +543,7 @@ namespace talk_face_movie2
             p.input_filename = textBoxInputfile.Text;
             p.output_filename = textBoxOutputfile.Text;
             p.ffmpeg = textBoxFfmpeg.Text;
-            p.csv_filename = textBoxCsv.Text; // 追加: CSVファイル名保存
+            p.csv_filename = textBoxCsv.Text;
             p.frame_rate = (int)numericUpDownFramerate.Value;
             p.small_threshold = (int)numericUpDownSmallThreshold.Value;
             p.large_threshold = (int)numericUpDownLargeThreshold.Value;
@@ -627,6 +646,7 @@ namespace talk_face_movie2
                 textBoxImagedir.Text = Path.GetDirectoryName(ofd.FileName);
             }
         }
+
         private void buttonImageDir2_Click(object sender, EventArgs e)
         {
             OpenFileDialog ofd = new OpenFileDialog();
@@ -652,7 +672,6 @@ namespace talk_face_movie2
             }
         }
 
-        // 追加: buttonCsv_Clickの実装
         private void buttonCsv_Click(object sender, EventArgs e)
         {
             OpenFileDialog ofd = new OpenFileDialog();
@@ -682,26 +701,20 @@ namespace talk_face_movie2
             public string image_dir { get; set; }
             [DataMember]
             public string image_dir2 { get; set; }
-
             [DataMember]
             public string input_filename { get; set; }
             [DataMember]
             public string output_filename { get; set; }
             [DataMember]
             public string ffmpeg { get; set; }
-
             [DataMember]
-            public string csv_filename { get; set; } // 追加: CSVファイル名
-
+            public string csv_filename { get; set; }
             [DataMember]
             public int frame_rate { get; set; }
-
             [DataMember]
             public int small_threshold { get; set; }
-
             [DataMember]
             public int large_threshold { get; set; }
-
             [DataMember]
             public int blink_interval { get; set; }
         }

@@ -162,7 +162,7 @@ namespace talk_face_movie2
             0,
             0});
             this.numericUpDownFramerate.Name = "numericUpDownFramerate";
-            this.numericUpDownFramerate.Size = new System.Drawing.Size(72, 19);
+            this.numericUpDownFramerate.Size = new System.Drawing.Size(88, 19);
             this.numericUpDownFramerate.TabIndex = 4;
             this.numericUpDownFramerate.Value = new decimal(new int[] {
             15,
@@ -184,7 +184,7 @@ namespace talk_face_movie2
             0,
             0});
             this.numericUpDownBlinkInterval.Name = "numericUpDownBlinkInterval";
-            this.numericUpDownBlinkInterval.Size = new System.Drawing.Size(72, 19);
+            this.numericUpDownBlinkInterval.Size = new System.Drawing.Size(88, 19);
             this.numericUpDownBlinkInterval.TabIndex = 5;
             this.numericUpDownBlinkInterval.Value = new decimal(new int[] {
             2000,
@@ -391,7 +391,7 @@ namespace talk_face_movie2
             this.cboTimestampMode.FormattingEnabled = true;
             this.cboTimestampMode.Location = new System.Drawing.Point(128, 172);
             this.cboTimestampMode.Name = "cboTimestampMode";
-            this.cboTimestampMode.Size = new System.Drawing.Size(72, 20);
+            this.cboTimestampMode.Size = new System.Drawing.Size(88, 20);
             this.cboTimestampMode.TabIndex = 23;
             // 
             // label10
@@ -438,7 +438,7 @@ namespace talk_face_movie2
             // label12
             // 
             this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(208, 176);
+            this.label12.Location = new System.Drawing.Point(224, 176);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(272, 12);
             this.label12.TabIndex = 19;
