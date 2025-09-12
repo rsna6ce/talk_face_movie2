@@ -513,7 +513,7 @@ namespace talk_face_movie2
             SetProgressbar(0);
             // cboTimestampModeの初期化（Person1&2を追加）
             cboTimestampMode.Items.AddRange(new string[] { "None", "Person1", "Person2", "Person1&2" });
-            cboTimestampMode.SelectedIndex = 0; // デフォルトは"None"
+            cboTimestampMode.SelectedIndex = 0; // デフォルトは"None"（後で上書きされる可能性あり）
 
             if (File.Exists(param_json_name))
             {
@@ -531,6 +531,11 @@ namespace talk_face_movie2
                     numericUpDownSmallThreshold.Value = p.small_threshold;
                     numericUpDownLargeThreshold.Value = p.large_threshold;
                     numericUpDownBlinkInterval.Value = p.blink_interval;
+                    // 追加: timestamp_modeの読み込み
+                    if (!string.IsNullOrEmpty(p.timestamp_mode) && cboTimestampMode.Items.Contains(p.timestamp_mode))
+                    {
+                        cboTimestampMode.SelectedItem = p.timestamp_mode;
+                    }
                 }
             }
         }
@@ -548,6 +553,7 @@ namespace talk_face_movie2
             p.small_threshold = (int)numericUpDownSmallThreshold.Value;
             p.large_threshold = (int)numericUpDownLargeThreshold.Value;
             p.blink_interval = (int)numericUpDownBlinkInterval.Value;
+            p.timestamp_mode = cboTimestampMode.SelectedItem?.ToString(); // 追加: timestamp_modeの保存
 
             using (var stream = new MemoryStream())
             using (var fs = new FileStream(param_json_name, FileMode.Create))
@@ -717,6 +723,16 @@ namespace talk_face_movie2
             public int large_threshold { get; set; }
             [DataMember]
             public int blink_interval { get; set; }
+            [DataMember] // 追加
+            public string timestamp_mode { get; set; } // cboTimestampModeの値を保存
+        }
+
+        private void labelInputfile_DoubleClick(object sender, EventArgs e)
+        {
+            string directory_name = System.IO.Path.GetDirectoryName(textBoxInputfile.Text);
+            string filename_without_ext = System.IO.Path.GetFileNameWithoutExtension(textBoxInputfile.Text);
+            textBoxOutputfile.Text = System.IO.Path.Combine(directory_name, filename_without_ext, ".mp4");
+            textBoxCsv.Text = System.IO.Path.Combine(directory_name, filename_without_ext, ".csv");
         }
     }
 }

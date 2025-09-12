@@ -45,7 +45,7 @@ namespace talk_face_movie2
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
-            this.label5 = new System.Windows.Forms.Label();
+            this.labelInputfile = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.textBoxLog = new System.Windows.Forms.TextBox();
@@ -272,14 +272,15 @@ namespace talk_face_movie2
             this.label4.TabIndex = 14;
             this.label4.Text = "小さい口音量 [%]";
             // 
-            // label5
+            // labelInputfile
             // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(8, 12);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(118, 12);
-            this.label5.TabIndex = 15;
-            this.label5.Text = "入力ファイル(wav/mp3)";
+            this.labelInputfile.AutoSize = true;
+            this.labelInputfile.Location = new System.Drawing.Point(8, 12);
+            this.labelInputfile.Name = "labelInputfile";
+            this.labelInputfile.Size = new System.Drawing.Size(118, 12);
+            this.labelInputfile.TabIndex = 15;
+            this.labelInputfile.Text = "入力ファイル(wav/mp3)";
+            this.labelInputfile.DoubleClick += new System.EventHandler(this.labelInputfile_DoubleClick);
             // 
             // label6
             // 
@@ -463,7 +464,7 @@ namespace talk_face_movie2
             this.Controls.Add(this.label11);
             this.Controls.Add(this.label7);
             this.Controls.Add(this.label6);
-            this.Controls.Add(this.label5);
+            this.Controls.Add(this.labelInputfile);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);
@@ -513,7 +514,7 @@ namespace talk_face_movie2
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Label labelInputfile;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.TextBox textBoxLog;
