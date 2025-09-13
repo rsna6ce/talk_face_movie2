@@ -729,10 +729,17 @@ namespace talk_face_movie2
 
         private void labelInputfile_DoubleClick(object sender, EventArgs e)
         {
-            string directory_name = System.IO.Path.GetDirectoryName(textBoxInputfile.Text);
-            string filename_without_ext = System.IO.Path.GetFileNameWithoutExtension(textBoxInputfile.Text);
-            textBoxOutputfile.Text = System.IO.Path.Combine(directory_name, filename_without_ext + ".mp4");
-            textBoxCsv.Text = System.IO.Path.Combine(directory_name, filename_without_ext + ".csv");
+            try
+            {
+                string directory_name = System.IO.Path.GetDirectoryName(textBoxInputfile.Text);
+                string filename_without_ext = System.IO.Path.GetFileNameWithoutExtension(textBoxInputfile.Text);
+                textBoxOutputfile.Text = System.IO.Path.Combine(directory_name, filename_without_ext + ".mp4");
+                textBoxCsv.Text = System.IO.Path.Combine(directory_name, filename_without_ext + ".csv");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error: {ex.Message}");
+            }
         }
     }
 }
