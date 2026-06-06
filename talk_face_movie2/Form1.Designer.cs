@@ -62,6 +62,8 @@ namespace talk_face_movie2
             this.textBoxImagedir2 = new System.Windows.Forms.TextBox();
             this.buttonImageDir2 = new System.Windows.Forms.Button();
             this.label12 = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
+            this.checkBoxAssMovie = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownFramerate)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownBlinkInterval)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownLargeThreshold)).BeginInit();
@@ -73,7 +75,7 @@ namespace talk_face_movie2
             this.buttonRun.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonRun.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.buttonRun.Location = new System.Drawing.Point(428, 204);
+            this.buttonRun.Location = new System.Drawing.Point(428, 236);
             this.buttonRun.Name = "buttonRun";
             this.buttonRun.Size = new System.Drawing.Size(571, 44);
             this.buttonRun.TabIndex = 8;
@@ -150,7 +152,7 @@ namespace talk_face_movie2
             // 
             // numericUpDownFramerate
             // 
-            this.numericUpDownFramerate.Location = new System.Drawing.Point(128, 204);
+            this.numericUpDownFramerate.Location = new System.Drawing.Point(128, 236);
             this.numericUpDownFramerate.Maximum = new decimal(new int[] {
             60,
             0,
@@ -172,7 +174,7 @@ namespace talk_face_movie2
             // 
             // numericUpDownBlinkInterval
             // 
-            this.numericUpDownBlinkInterval.Location = new System.Drawing.Point(128, 232);
+            this.numericUpDownBlinkInterval.Location = new System.Drawing.Point(128, 264);
             this.numericUpDownBlinkInterval.Maximum = new decimal(new int[] {
             10000,
             0,
@@ -194,7 +196,7 @@ namespace talk_face_movie2
             // 
             // numericUpDownLargeThreshold
             // 
-            this.numericUpDownLargeThreshold.Location = new System.Drawing.Point(352, 204);
+            this.numericUpDownLargeThreshold.Location = new System.Drawing.Point(352, 236);
             this.numericUpDownLargeThreshold.Maximum = new decimal(new int[] {
             99,
             0,
@@ -216,7 +218,7 @@ namespace talk_face_movie2
             // 
             // numericUpDownSmallThreshold
             // 
-            this.numericUpDownSmallThreshold.Location = new System.Drawing.Point(352, 232);
+            this.numericUpDownSmallThreshold.Location = new System.Drawing.Point(352, 264);
             this.numericUpDownSmallThreshold.Maximum = new decimal(new int[] {
             99,
             0,
@@ -239,7 +241,7 @@ namespace talk_face_movie2
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(8, 208);
+            this.label1.Location = new System.Drawing.Point(8, 240);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(97, 12);
             this.label1.TabIndex = 11;
@@ -248,7 +250,7 @@ namespace talk_face_movie2
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(8, 236);
+            this.label2.Location = new System.Drawing.Point(8, 268);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(77, 12);
             this.label2.TabIndex = 12;
@@ -257,7 +259,7 @@ namespace talk_face_movie2
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(252, 208);
+            this.label3.Location = new System.Drawing.Point(252, 240);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(90, 12);
             this.label3.TabIndex = 13;
@@ -266,7 +268,7 @@ namespace talk_face_movie2
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(252, 236);
+            this.label4.Location = new System.Drawing.Point(252, 268);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(89, 12);
             this.label4.TabIndex = 14;
@@ -305,7 +307,7 @@ namespace talk_face_movie2
             this.textBoxLog.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.textBoxLog.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.textBoxLog.Location = new System.Drawing.Point(8, 256);
+            this.textBoxLog.Location = new System.Drawing.Point(8, 288);
             this.textBoxLog.MaxLength = 9999999;
             this.textBoxLog.Multiline = true;
             this.textBoxLog.Name = "textBoxLog";
@@ -350,7 +352,7 @@ namespace talk_face_movie2
             // labelProgressbar
             // 
             this.labelProgressbar.BackColor = System.Drawing.Color.Red;
-            this.labelProgressbar.Location = new System.Drawing.Point(428, 248);
+            this.labelProgressbar.Location = new System.Drawing.Point(428, 280);
             this.labelProgressbar.Name = "labelProgressbar";
             this.labelProgressbar.Size = new System.Drawing.Size(568, 4);
             this.labelProgressbar.TabIndex = 22;
@@ -445,11 +447,31 @@ namespace talk_face_movie2
             this.label12.TabIndex = 19;
             this.label12.Text = "（Person2の場合、顔画像フォルダ2の画像を使用します）";
             // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(8, 208);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(99, 12);
+            this.label5.TabIndex = 19;
+            this.label5.Text = "ASS字幕動画生成";
+            // 
+            // checkBoxAssMovie
+            // 
+            this.checkBoxAssMovie.AutoSize = true;
+            this.checkBoxAssMovie.Location = new System.Drawing.Point(128, 204);
+            this.checkBoxAssMovie.Name = "checkBoxAssMovie";
+            this.checkBoxAssMovie.Size = new System.Drawing.Size(67, 16);
+            this.checkBoxAssMovie.TabIndex = 24;
+            this.checkBoxAssMovie.Text = "生成する";
+            this.checkBoxAssMovie.UseVisualStyleBackColor = true;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1008, 457);
+            this.ClientSize = new System.Drawing.Size(1008, 491);
+            this.Controls.Add(this.checkBoxAssMovie);
             this.Controls.Add(this.cboTimestampMode);
             this.Controls.Add(this.labelProgressbar);
             this.Controls.Add(this.buttonCsv);
@@ -457,6 +479,7 @@ namespace talk_face_movie2
             this.Controls.Add(this.textBoxCsv);
             this.Controls.Add(this.textBoxFfmpeg);
             this.Controls.Add(this.label12);
+            this.Controls.Add(this.label5);
             this.Controls.Add(this.label10);
             this.Controls.Add(this.label9);
             this.Controls.Add(this.label8);
@@ -531,6 +554,8 @@ namespace talk_face_movie2
         private System.Windows.Forms.TextBox textBoxImagedir2;
         private System.Windows.Forms.Button buttonImageDir2;
         private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.CheckBox checkBoxAssMovie;
     }
 }
 

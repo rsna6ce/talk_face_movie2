@@ -36,7 +36,7 @@ namespace talk_face_movie2
         }
 
         // 新規メソッド: 動画生成処理を抽出
-        private bool ProcessVideo(string selectedMode, string image_dir, string outputFileName)
+        private bool ProcessVideo(string selectedMode, string image_dir, string outputFileName, bool generateAssMovie = true)
         {
             string exe_dir = Directory.GetParent(Assembly.GetExecutingAssembly().Location).ToString();
             // 画像フォルダチェック
@@ -332,6 +332,14 @@ namespace talk_face_movie2
                         print_textbox(error);
                 }
             }
+            SetProgressbar(85);
+
+            // ====================== ASS字幕動画エンコード（新規追加） ======================
+            if (generateAssMovie && checkBoxAssMovie.Checked)
+            {
+                EncodeAssSubtitleMovie(wavReader, outputFileName);
+            }
+            // ============================================================================
             SetProgressbar(90);
 
             // mux sound with ffmpeg
@@ -389,6 +397,78 @@ namespace talk_face_movie2
             return true;
         }
 
+        // ====================== 新規メソッド：ASS字幕動画エンコード ======================
+        private void EncodeAssSubtitleMovie(WavFileReader wavReader, string baseOutputFileName)
+        {
+            string csvPath = textBoxCsv.Text;
+            if (string.IsNullOrEmpty(csvPath) || !File.Exists(csvPath))
+            {
+                print_textbox("ASS字幕動画: CSVファイルが見つかりません。スキップします。");
+                return;
+            }
+
+            string assPath = Path.ChangeExtension(csvPath, ".ass");
+            if (!File.Exists(assPath))
+            {
+                print_textbox($"ASS字幕動画: ASSファイルが見つかりません。\n{assPath}");
+                return;
+            }
+
+            double duration = wavReader.WaveformData.Length / (double)wavReader.Header.SampleRate;
+
+            // ASSから解像度取得
+            string assContent = File.ReadAllText(assPath);
+            int resX = 1920;
+            int resY = 250;
+            var lines = assContent.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+            foreach (var line in lines)
+            {
+                if (line.Contains("PlayResX:")) int.TryParse(line.Split(':')[1].Trim(), out resX);
+                if (line.Contains("PlayResY:")) int.TryParse(line.Split(':')[1].Trim(), out resY);
+            }
+
+            // 出力ファイル名を修正：常にベース名 + _dialogue.mp4
+            string dialogueMp4 = Path.Combine(
+                Path.GetDirectoryName(baseOutputFileName),
+                Path.GetFileNameWithoutExtension(textBoxOutputfile.Text) + "_dialogue.mp4"
+            );
+
+            print_textbox($"ASS字幕動画エンコード開始... ({resX}x{resY}, {duration:F2}秒)");
+
+            string safeAssPath = assPath.Replace("\\", "\\\\").Replace(":", "\\:");
+
+            ProcessStartInfo processInfo = new ProcessStartInfo
+            {
+                FileName = textBoxFfmpeg.Text,
+                Arguments = string.Format(
+                    "-loglevel warning -y " +
+                    "-f lavfi -i color=color=black:size={0}x{1}:duration={2:F3} " +
+                    "-vf \"ass='{3}'\" " +
+                    "-c:v libx264 -preset slow -crf 18 -pix_fmt yuv420p -r 30 " +
+                    "\"{4}\"",
+                    resX, resY, duration, safeAssPath, dialogueMp4),
+                UseShellExecute = false,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                CreateNoWindow = true
+            };
+
+            using (Process process = new Process())
+            {
+                process.StartInfo = processInfo;
+                process.Start();
+                process.WaitForExit();
+
+                string output = process.StandardOutput.ReadToEnd();
+                string error = process.StandardError.ReadToEnd();
+                if (!string.IsNullOrEmpty(output)) print_textbox(output);
+                if (!string.IsNullOrEmpty(error)) print_textbox(error);
+            }
+
+            print_textbox($"ASS字幕動画出力完了: {dialogueMp4}");
+        }
+        // ============================================================================
+
         private void button1_Click(object sender, EventArgs e)
         {
             textBoxLog.Text = "";
@@ -415,14 +495,14 @@ namespace talk_face_movie2
                 // Person1の処理
                 string outputFileName1 = Path.Combine(Path.GetDirectoryName(textBoxOutputfile.Text),
                     Path.GetFileNameWithoutExtension(textBoxOutputfile.Text) + "_person1.mp4");
-                if (!ProcessVideo("Person1", textBoxImagedir.Text, outputFileName1))
+                if (!ProcessVideo("Person1", textBoxImagedir.Text, outputFileName1, false))
                 {
                     return; // エラー発生時中断
                 }
                 // Person2の処理
                 string outputFileName2 = Path.Combine(Path.GetDirectoryName(textBoxOutputfile.Text),
                     Path.GetFileNameWithoutExtension(textBoxOutputfile.Text) + "_person2.mp4");
-                if (!ProcessVideo("Person2", textBoxImagedir2.Text, outputFileName2))
+                if (!ProcessVideo("Person2", textBoxImagedir2.Text, outputFileName2, true))
                 {
                     return; // エラー発生時中断
                 }
@@ -536,6 +616,7 @@ namespace talk_face_movie2
                     {
                         cboTimestampMode.SelectedItem = p.timestamp_mode;
                     }
+                    checkBoxAssMovie.Checked = p.ass_movie_enabled;  // 新規追加
                 }
             }
         }
@@ -554,6 +635,7 @@ namespace talk_face_movie2
             p.large_threshold = (int)numericUpDownLargeThreshold.Value;
             p.blink_interval = (int)numericUpDownBlinkInterval.Value;
             p.timestamp_mode = cboTimestampMode.SelectedItem?.ToString(); // 追加: timestamp_modeの保存
+            p.ass_movie_enabled = checkBoxAssMovie.Checked;
 
             using (var stream = new MemoryStream())
             using (var fs = new FileStream(param_json_name, FileMode.Create))
@@ -725,6 +807,8 @@ namespace talk_face_movie2
             public int blink_interval { get; set; }
             [DataMember] // 追加
             public string timestamp_mode { get; set; } // cboTimestampModeの値を保存
+            [DataMember]
+            public bool ass_movie_enabled { get; set; }
         }
 
         private void labelInputfile_DoubleClick(object sender, EventArgs e)
