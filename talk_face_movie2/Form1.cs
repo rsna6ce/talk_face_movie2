@@ -472,6 +472,58 @@ namespace talk_face_movie2
         private void button1_Click(object sender, EventArgs e)
         {
             textBoxLog.Text = "";
+
+            // ====================== timestamp2 自動実行 ======================
+            if (checkBoxTimestamp2Auto.Checked)
+            {
+                if (string.IsNullOrEmpty(textBoxTimestamp2exe.Text) || !File.Exists(textBoxTimestamp2exe.Text))
+                {
+                    MessageBox.Show("talk_face_movie_timestamp2.exe が設定されていません。", "エラー",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
+                print_textbox("talk_face_movie_timestamp2.exe を自動実行しています...");
+                System.Threading.Thread.Sleep(1000);
+
+                ProcessStartInfo psi = new ProcessStartInfo
+                {
+                    FileName = textBoxTimestamp2exe.Text,
+                    Arguments = "/auto",
+                    UseShellExecute = true,
+                    WorkingDirectory = Path.GetDirectoryName(textBoxTimestamp2exe.Text)
+                };
+
+                try
+                {
+                    using (Process process = Process.Start(psi))
+                    {
+                        if (process != null)
+                        {
+                            print_textbox("timestamp2の処理を待機しています...");
+                            process.WaitForExit();
+
+                            if (process.ExitCode != 0)
+                            {
+                                MessageBox.Show("timestamp2.exe でエラーが発生しました。\n\n処理を中断します。",
+                                    "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                print_textbox("timestamp2の処理でエラーが発生しました。\n処理を中断します。");
+                                return;   // ここで中断
+                            }
+
+                            print_textbox("timestamp2の処理が正常に完了しました。");
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("timestamp2の起動に失敗しました。\n" + ex.Message, "エラー");
+                    return;
+                }
+            }
+            // ============================================================
+
+
             // 入力ファイルチェック
             if (File.Exists(textBoxInputfile.Text) == false)
             {
@@ -617,6 +669,8 @@ namespace talk_face_movie2
                         cboTimestampMode.SelectedItem = p.timestamp_mode;
                     }
                     checkBoxAssMovie.Checked = p.ass_movie_enabled;  // 新規追加
+                    textBoxTimestamp2exe.Text = p.timestamp2_exe ?? "";        // ← 追加
+                    checkBoxTimestamp2Auto.Checked = p.timestamp2_auto;        // ← 追加
                 }
             }
         }
@@ -636,6 +690,8 @@ namespace talk_face_movie2
             p.blink_interval = (int)numericUpDownBlinkInterval.Value;
             p.timestamp_mode = cboTimestampMode.SelectedItem?.ToString(); // 追加: timestamp_modeの保存
             p.ass_movie_enabled = checkBoxAssMovie.Checked;
+            p.timestamp2_exe = textBoxTimestamp2exe.Text;           // ← 追加
+            p.timestamp2_auto = checkBoxTimestamp2Auto.Checked;     // ← 追加
 
             using (var stream = new MemoryStream())
             using (var fs = new FileStream(param_json_name, FileMode.Create))
@@ -809,6 +865,11 @@ namespace talk_face_movie2
             public string timestamp_mode { get; set; } // cboTimestampModeの値を保存
             [DataMember]
             public bool ass_movie_enabled { get; set; }
+            [DataMember]
+            public string timestamp2_exe { get; set; }      // ← 追加
+
+            [DataMember]
+            public bool timestamp2_auto { get; set; }       // ← 追加
         }
 
         private void labelInputfile_DoubleClick(object sender, EventArgs e)
@@ -823,6 +884,50 @@ namespace talk_face_movie2
             catch (Exception ex)
             {
                 MessageBox.Show($"Error: {ex.Message}");
+            }
+        }
+
+        private void buttonTimestamp2exe_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog ofd = new OpenFileDialog();
+            ofd.FileName = "talk_face_movie_timestamp2.exe";
+            ofd.Filter = "talk_face_movie_timestamp2.exe|talk_face_movie_timestamp2.exe";
+            ofd.FilterIndex = 1;
+            ofd.Title = "talk_face_movie_timestamp2.exe を指定してください";
+            ofd.CheckFileExists = true;
+            ofd.CheckPathExists = true;
+
+            if (textBoxTimestamp2exe.Text != "" && File.Exists(textBoxTimestamp2exe.Text))
+            {
+                ofd.InitialDirectory = Path.GetDirectoryName(textBoxTimestamp2exe.Text);
+            }
+
+            if (ofd.ShowDialog() == DialogResult.OK)
+            {
+                textBoxTimestamp2exe.Text = ofd.FileName;
+            }
+        }
+
+        private void labelTimestamp2exe_DoubleClick(object sender, EventArgs e)
+        {
+            if (string.IsNullOrEmpty(textBoxTimestamp2exe.Text) || !File.Exists(textBoxTimestamp2exe.Text))
+            {
+                return;
+            }
+
+            try
+            {
+                Process.Start(new ProcessStartInfo
+                {
+                    FileName = textBoxTimestamp2exe.Text,
+                    UseShellExecute = true,
+                    WorkingDirectory = Path.GetDirectoryName(textBoxTimestamp2exe.Text)
+                });
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("起動に失敗しました。\n" + ex.Message, "エラー",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
     }

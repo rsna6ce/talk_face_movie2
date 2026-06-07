@@ -64,6 +64,10 @@ namespace talk_face_movie2
             this.label12 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.checkBoxAssMovie = new System.Windows.Forms.CheckBox();
+            this.labelTimestamp2exe = new System.Windows.Forms.Label();
+            this.checkBoxTimestamp2Auto = new System.Windows.Forms.CheckBox();
+            this.textBoxTimestamp2exe = new System.Windows.Forms.TextBox();
+            this.buttonTimestamp2exe = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownFramerate)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownBlinkInterval)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownLargeThreshold)).BeginInit();
@@ -75,7 +79,7 @@ namespace talk_face_movie2
             this.buttonRun.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonRun.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.buttonRun.Location = new System.Drawing.Point(428, 236);
+            this.buttonRun.Location = new System.Drawing.Point(428, 288);
             this.buttonRun.Name = "buttonRun";
             this.buttonRun.Size = new System.Drawing.Size(571, 44);
             this.buttonRun.TabIndex = 8;
@@ -152,7 +156,7 @@ namespace talk_face_movie2
             // 
             // numericUpDownFramerate
             // 
-            this.numericUpDownFramerate.Location = new System.Drawing.Point(128, 236);
+            this.numericUpDownFramerate.Location = new System.Drawing.Point(128, 288);
             this.numericUpDownFramerate.Maximum = new decimal(new int[] {
             60,
             0,
@@ -174,7 +178,7 @@ namespace talk_face_movie2
             // 
             // numericUpDownBlinkInterval
             // 
-            this.numericUpDownBlinkInterval.Location = new System.Drawing.Point(128, 264);
+            this.numericUpDownBlinkInterval.Location = new System.Drawing.Point(128, 316);
             this.numericUpDownBlinkInterval.Maximum = new decimal(new int[] {
             10000,
             0,
@@ -196,7 +200,7 @@ namespace talk_face_movie2
             // 
             // numericUpDownLargeThreshold
             // 
-            this.numericUpDownLargeThreshold.Location = new System.Drawing.Point(352, 236);
+            this.numericUpDownLargeThreshold.Location = new System.Drawing.Point(352, 288);
             this.numericUpDownLargeThreshold.Maximum = new decimal(new int[] {
             99,
             0,
@@ -218,7 +222,7 @@ namespace talk_face_movie2
             // 
             // numericUpDownSmallThreshold
             // 
-            this.numericUpDownSmallThreshold.Location = new System.Drawing.Point(352, 264);
+            this.numericUpDownSmallThreshold.Location = new System.Drawing.Point(352, 316);
             this.numericUpDownSmallThreshold.Maximum = new decimal(new int[] {
             99,
             0,
@@ -241,7 +245,7 @@ namespace talk_face_movie2
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(8, 240);
+            this.label1.Location = new System.Drawing.Point(8, 292);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(97, 12);
             this.label1.TabIndex = 11;
@@ -250,7 +254,7 @@ namespace talk_face_movie2
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(8, 268);
+            this.label2.Location = new System.Drawing.Point(8, 320);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(77, 12);
             this.label2.TabIndex = 12;
@@ -259,7 +263,7 @@ namespace talk_face_movie2
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(252, 240);
+            this.label3.Location = new System.Drawing.Point(252, 292);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(90, 12);
             this.label3.TabIndex = 13;
@@ -268,7 +272,7 @@ namespace talk_face_movie2
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(252, 268);
+            this.label4.Location = new System.Drawing.Point(252, 320);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(89, 12);
             this.label4.TabIndex = 14;
@@ -307,7 +311,7 @@ namespace talk_face_movie2
             this.textBoxLog.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.textBoxLog.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.textBoxLog.Location = new System.Drawing.Point(8, 288);
+            this.textBoxLog.Location = new System.Drawing.Point(8, 340);
             this.textBoxLog.MaxLength = 9999999;
             this.textBoxLog.Multiline = true;
             this.textBoxLog.Name = "textBoxLog";
@@ -352,7 +356,7 @@ namespace talk_face_movie2
             // labelProgressbar
             // 
             this.labelProgressbar.BackColor = System.Drawing.Color.Red;
-            this.labelProgressbar.Location = new System.Drawing.Point(428, 280);
+            this.labelProgressbar.Location = new System.Drawing.Point(428, 332);
             this.labelProgressbar.Name = "labelProgressbar";
             this.labelProgressbar.Size = new System.Drawing.Size(568, 4);
             this.labelProgressbar.TabIndex = 22;
@@ -360,7 +364,7 @@ namespace talk_face_movie2
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(8, 148);
+            this.label9.Location = new System.Drawing.Point(8, 200);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(101, 12);
             this.label9.TabIndex = 19;
@@ -371,7 +375,7 @@ namespace talk_face_movie2
             this.textBoxCsv.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.textBoxCsv.Font = new System.Drawing.Font("ＭＳ ゴシック", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.textBoxCsv.Location = new System.Drawing.Point(128, 144);
+            this.textBoxCsv.Location = new System.Drawing.Point(128, 196);
             this.textBoxCsv.Name = "textBoxCsv";
             this.textBoxCsv.Size = new System.Drawing.Size(839, 19);
             this.textBoxCsv.TabIndex = 20;
@@ -380,7 +384,7 @@ namespace talk_face_movie2
             // buttonCsv
             // 
             this.buttonCsv.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonCsv.Location = new System.Drawing.Point(971, 144);
+            this.buttonCsv.Location = new System.Drawing.Point(972, 192);
             this.buttonCsv.Name = "buttonCsv";
             this.buttonCsv.Size = new System.Drawing.Size(28, 23);
             this.buttonCsv.TabIndex = 3;
@@ -392,7 +396,7 @@ namespace talk_face_movie2
             // 
             this.cboTimestampMode.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cboTimestampMode.FormattingEnabled = true;
-            this.cboTimestampMode.Location = new System.Drawing.Point(128, 172);
+            this.cboTimestampMode.Location = new System.Drawing.Point(128, 224);
             this.cboTimestampMode.Name = "cboTimestampMode";
             this.cboTimestampMode.Size = new System.Drawing.Size(88, 20);
             this.cboTimestampMode.TabIndex = 23;
@@ -400,7 +404,7 @@ namespace talk_face_movie2
             // label10
             // 
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(8, 176);
+            this.label10.Location = new System.Drawing.Point(8, 228);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(95, 12);
             this.label10.TabIndex = 19;
@@ -441,7 +445,7 @@ namespace talk_face_movie2
             // label12
             // 
             this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(224, 176);
+            this.label12.Location = new System.Drawing.Point(224, 228);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(272, 12);
             this.label12.TabIndex = 19;
@@ -450,7 +454,7 @@ namespace talk_face_movie2
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(8, 208);
+            this.label5.Location = new System.Drawing.Point(8, 260);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(99, 12);
             this.label5.TabIndex = 19;
@@ -459,28 +463,74 @@ namespace talk_face_movie2
             // checkBoxAssMovie
             // 
             this.checkBoxAssMovie.AutoSize = true;
-            this.checkBoxAssMovie.Location = new System.Drawing.Point(128, 204);
+            this.checkBoxAssMovie.Location = new System.Drawing.Point(128, 256);
             this.checkBoxAssMovie.Name = "checkBoxAssMovie";
             this.checkBoxAssMovie.Size = new System.Drawing.Size(67, 16);
             this.checkBoxAssMovie.TabIndex = 24;
             this.checkBoxAssMovie.Text = "生成する";
             this.checkBoxAssMovie.UseVisualStyleBackColor = true;
             // 
+            // labelTimestamp2exe
+            // 
+            this.labelTimestamp2exe.AutoSize = true;
+            this.labelTimestamp2exe.Location = new System.Drawing.Point(8, 148);
+            this.labelTimestamp2exe.Name = "labelTimestamp2exe";
+            this.labelTimestamp2exe.Size = new System.Drawing.Size(88, 24);
+            this.labelTimestamp2exe.TabIndex = 19;
+            this.labelTimestamp2exe.Text = "talk_face_movie_\r\ntimestamp2.exe";
+            this.labelTimestamp2exe.DoubleClick += new System.EventHandler(this.labelTimestamp2exe_DoubleClick);
+            // 
+            // checkBoxTimestamp2Auto
+            // 
+            this.checkBoxTimestamp2Auto.AutoSize = true;
+            this.checkBoxTimestamp2Auto.Location = new System.Drawing.Point(128, 172);
+            this.checkBoxTimestamp2Auto.Name = "checkBoxTimestamp2Auto";
+            this.checkBoxTimestamp2Auto.Size = new System.Drawing.Size(72, 16);
+            this.checkBoxTimestamp2Auto.TabIndex = 24;
+            this.checkBoxTimestamp2Auto.Text = "自動実行";
+            this.checkBoxTimestamp2Auto.UseVisualStyleBackColor = true;
+            // 
+            // textBoxTimestamp2exe
+            // 
+            this.textBoxTimestamp2exe.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.textBoxTimestamp2exe.Font = new System.Drawing.Font("ＭＳ ゴシック", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.textBoxTimestamp2exe.Location = new System.Drawing.Point(128, 148);
+            this.textBoxTimestamp2exe.Name = "textBoxTimestamp2exe";
+            this.textBoxTimestamp2exe.Size = new System.Drawing.Size(839, 19);
+            this.textBoxTimestamp2exe.TabIndex = 20;
+            this.textBoxTimestamp2exe.TabStop = false;
+            // 
+            // buttonTimestamp2exe
+            // 
+            this.buttonTimestamp2exe.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonTimestamp2exe.Location = new System.Drawing.Point(972, 148);
+            this.buttonTimestamp2exe.Name = "buttonTimestamp2exe";
+            this.buttonTimestamp2exe.Size = new System.Drawing.Size(28, 23);
+            this.buttonTimestamp2exe.TabIndex = 3;
+            this.buttonTimestamp2exe.Text = "...";
+            this.buttonTimestamp2exe.UseVisualStyleBackColor = true;
+            this.buttonTimestamp2exe.Click += new System.EventHandler(this.buttonTimestamp2exe_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1008, 491);
+            this.ClientSize = new System.Drawing.Size(1008, 542);
+            this.Controls.Add(this.checkBoxTimestamp2Auto);
             this.Controls.Add(this.checkBoxAssMovie);
             this.Controls.Add(this.cboTimestampMode);
             this.Controls.Add(this.labelProgressbar);
+            this.Controls.Add(this.buttonTimestamp2exe);
             this.Controls.Add(this.buttonCsv);
             this.Controls.Add(this.buttonFfmpeg);
+            this.Controls.Add(this.textBoxTimestamp2exe);
             this.Controls.Add(this.textBoxCsv);
             this.Controls.Add(this.textBoxFfmpeg);
             this.Controls.Add(this.label12);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.label10);
+            this.Controls.Add(this.labelTimestamp2exe);
             this.Controls.Add(this.label9);
             this.Controls.Add(this.label8);
             this.Controls.Add(this.textBoxLog);
@@ -556,6 +606,10 @@ namespace talk_face_movie2
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.CheckBox checkBoxAssMovie;
+        private System.Windows.Forms.Label labelTimestamp2exe;
+        private System.Windows.Forms.CheckBox checkBoxTimestamp2Auto;
+        private System.Windows.Forms.TextBox textBoxTimestamp2exe;
+        private System.Windows.Forms.Button buttonTimestamp2exe;
     }
 }
 
