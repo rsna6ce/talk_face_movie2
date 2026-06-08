@@ -337,14 +337,63 @@ namespace talk_face_movie2
             // ====================== ASS字幕動画エンコード（新規追加） ======================
             if (generateAssMovie && checkBoxAssMovie.Checked)
             {
-                EncodeAssSubtitleMovie(wavReader, outputFileName);
+                // 一時ファイル名
+                string dialogueTempMp4 = Path.Combine(
+                    Path.GetDirectoryName(outputFileName),
+                    Path.GetFileNameWithoutExtension(textBoxOutputfile.Text) + "_temp_dialogue.mp4"
+                );
+                // 字幕動画名
+                string dialogueMp4 = Path.Combine(
+                    Path.GetDirectoryName(outputFileName),
+                    Path.GetFileNameWithoutExtension(textBoxOutputfile.Text) + "_dialogue.mp4"
+                );
+
+                print_textbox("encoding subtitle movie with ffmpeg...");
+                EncodeAssSubtitleMovie(wavReader, dialogueTempMp4);
+
+                print_textbox("muxing sound with ffmpeg...");
+                {
+                    ProcessStartInfo processInfo = new ProcessStartInfo
+                    {
+                        FileName = textBoxFfmpeg.Text,
+                        Arguments = string.Format("-loglevel warning " +
+                                                 "-y " +
+                                                 "-i \"{0}\" " +
+                                                 "-i \"{1}\" " +
+                                                 "-c:v copy " +
+                                                 "-c:a aac " +
+                                                 "-map 0:v:0 " +
+                                                 "-map 1:a:0 " +
+                                                 "\"{2}\" ",
+                                                 dialogueTempMp4, filename_input, dialogueMp4),
+                        UseShellExecute = false,
+                        RedirectStandardOutput = true,
+                        RedirectStandardError = true,
+                        CreateNoWindow = true
+                    };
+                    using (Process process = new Process())
+                    {
+                        process.StartInfo = processInfo;
+                        process.Start();
+                        process.WaitForExit();
+
+                        string output = process.StandardOutput.ReadToEnd();
+                        string error = process.StandardError.ReadToEnd();
+                        if (!string.IsNullOrEmpty(output))
+                            print_textbox(output);
+                        if (!string.IsNullOrEmpty(error))
+                            print_textbox(error);
+                    }
+                }
+                System.IO.File.Delete(dialogueTempMp4);
             }
             // ============================================================================
             SetProgressbar(90);
 
-            // mux sound with ffmpeg
-            print_textbox("muxing sound with ffmpeg...");
+            // ASS動画をつらない時は口パク動画に音声を付ける
+            if (!checkBoxAssMovie.Checked)
             {
+                print_textbox("muxing sound with ffmpeg...");
                 ProcessStartInfo processInfo = new ProcessStartInfo
                 {
                     FileName = textBoxFfmpeg.Text,
@@ -398,7 +447,7 @@ namespace talk_face_movie2
         }
 
         // ====================== 新規メソッド：ASS字幕動画エンコード ======================
-        private void EncodeAssSubtitleMovie(WavFileReader wavReader, string baseOutputFileName)
+        private void EncodeAssSubtitleMovie(WavFileReader wavReader, string dialogueMp4)
         {
             string csvPath = textBoxCsv.Text;
             if (string.IsNullOrEmpty(csvPath) || !File.Exists(csvPath))
@@ -426,12 +475,6 @@ namespace talk_face_movie2
                 if (line.Contains("PlayResX:")) int.TryParse(line.Split(':')[1].Trim(), out resX);
                 if (line.Contains("PlayResY:")) int.TryParse(line.Split(':')[1].Trim(), out resY);
             }
-
-            // 出力ファイル名を修正：常にベース名 + _dialogue.mp4
-            string dialogueMp4 = Path.Combine(
-                Path.GetDirectoryName(baseOutputFileName),
-                Path.GetFileNameWithoutExtension(textBoxOutputfile.Text) + "_dialogue.mp4"
-            );
 
             print_textbox($"ASS字幕動画エンコード開始... ({resX}x{resY}, {duration:F2}秒)");
 
