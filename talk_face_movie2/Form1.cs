@@ -425,6 +425,11 @@ namespace talk_face_movie2
                     if (!string.IsNullOrEmpty(error))
                         print_textbox(error);
                 }
+            } 
+            else
+            {
+                // mux エンコードしない時はファイルをコピーして出力動画生成
+                File.Copy(temp_mp4, outputFileName, true);
             }
             SetProgressbar(95);
 
