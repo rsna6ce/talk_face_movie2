@@ -534,10 +534,14 @@ namespace talk_face_movie2
                 print_textbox("talk_face_movie_timestamp2.exe を自動実行しています...");
                 System.Threading.Thread.Sleep(1000);
 
+                // textBoxInputfile から拡張子を除いたパスを作成
+                string basePath = Path.ChangeExtension(textBoxInputfile.Text, null);  // 拡張子を除去
+                print_textbox($"base path: {basePath}");
+
                 ProcessStartInfo psi = new ProcessStartInfo
                 {
                     FileName = textBoxTimestamp2exe.Text,
-                    Arguments = "/auto",
+                    Arguments = $"/auto /input \"{basePath}\"",
                     UseShellExecute = true,
                     WorkingDirectory = Path.GetDirectoryName(textBoxTimestamp2exe.Text)
                 };
